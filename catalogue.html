@@ -162,6 +162,7 @@ dialog form{display:flex;flex-direction:column;max-height:calc(100vh - 34px)}
 .field small{color:var(--muted);font-size:12px}
 .dfoot{padding:12px 20px 16px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
 .dfoot .right{display:flex;gap:8px;margin-left:auto}
+.dates{grid-column:1/-1;margin:4px 0 0;padding-top:10px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
 .err{grid-column:1/-1;color:var(--danger);font-size:13px;margin:0}
 .fiche-box{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;border:1px dashed var(--line);border-radius:6px;padding:10px 12px;min-width:0}
 .fiche-box.over{border-color:var(--accent);background:var(--accent-soft)}
@@ -326,6 +327,7 @@ label.btn{display:inline-block}
         <small id="fa-hist-note"></small>
       </div>
       <p class="err" id="fa-err" hidden></p>
+      <p class="dates" id="fa-dates" hidden></p>
     </div>
     <div class="dfoot">
       <button class="btn danger write" type="button" id="fa-del" hidden>Supprimer</button>
@@ -435,6 +437,12 @@ const FAMILLES = [
   {code:"REM", nom:"Matériaux de remblais"},
   {code:"MAC", nom:"Maçonnerie"},
 ];
+const frDate = d => { const x = new Date(d); return isNaN(x) ? String(d) : x.toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"}); };
+function creationDate(a){
+  if (a.creeLe) return a.creeLe;
+  const ds = [(Array.isArray(a.documents) ? a.documents : []).map(d => d.le).filter(Boolean), a.majLe ? [a.majLe] : []].flat().sort();
+  return ds[0] || "";
+}
 const dispName = a => a ? (a.designationPerso || a.designation || "") : "";
 const famNom = c => (FAMILLES.find(f => f.code === c) || {nom:c || "—"}).nom;
 const $ = s => document.querySelector(s);
@@ -920,7 +928,7 @@ $("#imp-go").addEventListener("click", async () => {
       const condQte = l.condQte > 0 ? Number(l.condQte) : null;
       if (l.action === "creer") {
         const ref = nextFree(l.famille);
-        await state.db.collection("articles").doc(ref).set({famille:l.famille, ref, designation:String(l.designation).trim(), designationPerso:String(l.perso || "").trim(), codeGed:"", unite:String(l.unite || "").trim(), prix, qteMarche:null, fournisseur:four, fabricant:String(l.fabricant || "").trim(), refFournisseur:String(l.refFour || "").trim(), conditionnement:String(l.cond || "").trim(), condQte, delai:null, norme:"", fiche:"", ficheId:"", ficheNom:"", ficheHash:"", documents:[docEntry(prix)], remarques:"", majLe:today});
+        await state.db.collection("articles").doc(ref).set({famille:l.famille, ref, designation:String(l.designation).trim(), designationPerso:String(l.perso || "").trim(), codeGed:"", unite:String(l.unite || "").trim(), prix, qteMarche:null, fournisseur:four, fabricant:String(l.fabricant || "").trim(), refFournisseur:String(l.refFour || "").trim(), conditionnement:String(l.cond || "").trim(), condQte, delai:null, norme:"", fiche:"", ficheId:"", ficheNom:"", ficheHash:"", documents:[docEntry(prix)], remarques:"", majLe:today, creeLe:now});
         created++;
       } else {
         const a = state.articles.find(x => x._id === l.action.slice(4));
@@ -1282,6 +1290,7 @@ function openArticle(a){
   document.querySelectorAll("#f-article .auto").forEach(i => i.classList.remove("auto"));
   renderDocs();
   renderArticleHistory(a);
+  { const p = $("#fa-dates"); const c = a ? creationDate(a) : ""; p.hidden = !a; p.textContent = a ? (c ? "Ajouté le " + frDate(c) : "Date d'ajout inconnue") + (a.majLe && a.majLe.slice(0, 10) !== String(c).slice(0, 10) ? " · Modifié le " + frDate(a.majLe) : "") : ""; }
   $("#fa-del").hidden = !a || !state.canWrite; armDelete($("#fa-del"));
   lockForm($("#f-article"));
   $("#dlg-article").showModal();
@@ -1324,6 +1333,7 @@ async function saveArticle(e){
   try {
     data.fournisseur = await resolveFournisseur($("#fa-fournisseur").value);
     data.majLe = new Date().toISOString().slice(0, 10);
+    data.creeLe = state.editing ? (creationDate(state.editing) || data.majLe) : new Date().toISOString();
     const id = state.editing ? state.editing._id : ref;
     await state.db.collection("articles").doc(id).set(data);
     $("#dlg-article").close(); toast(state.editing ? "Article mis à jour" : "Article " + ref + " ajouté");
