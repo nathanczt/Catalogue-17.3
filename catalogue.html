@@ -50,7 +50,12 @@ nav.tabs button{white-space:nowrap}
 .imp .hint.pu-diff-txt{color:var(--danger);font-weight:600;white-space:nowrap}
 @media (max-width:900px){.imp-meta{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.imp-meta{grid-template-columns:minmax(0,1fr)}}
-#f-chantier{max-width:220px}
+.filters{display:flex;flex-direction:column;gap:8px}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip-label{font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);min-width:76px}
+.chip.add{border-style:dashed;color:var(--accent);border-color:var(--accent)}
+.chip-empty{font-size:13px;color:var(--muted)}
+#dlg-famille{width:min(460px,calc(100vw - 24px))}
 .cart-btn{display:inline-flex;align-items:center;gap:8px}
 .cart-n{font-family:var(--f-mono);font-size:12px;min-width:20px;padding:1px 6px;border-radius:999px;background:var(--steel);color:var(--surface);text-align:center}
 .add-cart{font:600 13px var(--f-body);padding:5px 10px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;white-space:nowrap}
@@ -218,7 +223,6 @@ label.btn{display:inline-block}
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
             <input id="q" type="search" placeholder="Rechercher une référence, un code GED, une désignation" aria-label="Rechercher">
           </div>
-          <select id="f-chantier" aria-label="Filtrer par chantier"><option value="">Tous les chantiers</option></select>
           <button class="btn" id="export" type="button">Exporter CSV</button>
         </div>
         <div class="chips" id="chips" aria-label="Filtrer par famille"></div>
@@ -428,6 +432,19 @@ label.btn{display:inline-block}
   </form>
 </dialog>
 
+<dialog id="dlg-famille">
+  <form id="f-famille" novalidate>
+    <div class="dhead"><h2>Nouvelle famille</h2></div>
+    <div class="dbody">
+      <div class="field full"><label for="fm-nom">Nom de la famille <em>*</em></label><input id="fm-nom" placeholder="Ex. Voirie et signalisation"></div>
+      <div class="field"><label for="fm-code">Code <em>*</em></label><input id="fm-code" maxlength="5" placeholder="Ex. VOI"><small>Préfixe des références (VOI-001…). Proposé automatiquement.</small></div>
+      <div class="field full"><small>Familles existantes : <span id="fm-list"></span></small></div>
+      <p class="err" id="fm-err" hidden></p>
+    </div>
+    <div class="dfoot"><div class="right"><button class="btn" type="button" data-close>Annuler</button><button class="btn primary" type="submit" id="fm-save">Ajouter la famille</button></div></div>
+  </form>
+</dialog>
+
 <datalist id="fabricants"></datalist>
 <datalist id="chantiers"></datalist>
 <datalist id="fournisseurs-dl"></datalist>
@@ -477,12 +494,69 @@ try { const v = localStorage.getItem("cat-view"); if (v === "fournisseurs" || v 
 
 /* ---------- Rendu articles ---------- */
 function renderChips(){
-  const box = $("#chips"); box.textContent = "";
+  const box = $("#chips"); box.textContent = ""; box.className = "filters";
   const counts = {}; for (const a of state.articles) counts[a.famille] = (counts[a.famille] || 0) + 1;
   const mk = (code, label, n) => { const c = el("button", {class:"chip", type:"button", "aria-pressed": String(state.filter === code)}, label, el("b", {text:String(n)})); c.addEventListener("click", () => { state.filter = state.filter === code && code !== "" ? "" : code; renderArticles(); }); return c; };
-  box.append(mk("", "Toutes les familles", state.articles.length));
-  for (const f of FAMILLES) box.append(mk(f.code, f.nom, counts[f.code] || 0));
+  const famRow = el("div", {class:"chip-row"}, el("span", {class:"chip-label", text:"Familles"}));
+  famRow.append(mk("", "Toutes", state.articles.length));
+  for (const f of FAMILLES) famRow.append(mk(f.code, f.nom, counts[f.code] || 0));
+  if (state.canWrite && state.db) { const add = el("button", {class:"chip add", type:"button", text:"+ Ajouter une famille"}); add.addEventListener("click", openFamille); famRow.append(add); }
+  const chCounts = {}; let none = 0;
+  for (const a of state.articles) { const c = (a.chantier || "").trim(); if (c) chCounts[c] = (chCounts[c] || 0) + 1; else none++; }
+  const list = chantierList();
+  const mkc = (val, label, n) => { const c = el("button", {class:"chip", type:"button", "aria-pressed": String((state.chantier || "") === val)}, label, el("b", {text:String(n)})); c.addEventListener("click", () => { state.chantier = state.chantier === val && val !== "" ? "" : val; renderArticles(); }); return c; };
+  const chRow = el("div", {class:"chip-row"}, el("span", {class:"chip-label", text:"Chantiers"}));
+  if (!list.length) chRow.append(el("span", {class:"chip-empty", text:"Aucun chantier pour l'instant : renseignez-le dans la fiche d'un article."}));
+  else {
+    chRow.append(mkc("", "Tous", state.articles.length));
+    for (const n of list) chRow.append(mkc(n, n, chCounts[n] || 0));
+    if (none) chRow.append(mkc("__none__", "Sans chantier", none));
+  }
+  box.append(famRow, chRow);
 }
+/* ---------- Familles modifiables ---------- */
+function rebuildFamSel(){
+  const s = $("#fa-famille"); if (!s) return; const cur = s.value; s.textContent = "";
+  for (const f of FAMILLES) s.append(el("option", {value:f.code, text:f.code + " · " + f.nom}));
+  if (cur) s.value = cur;
+}
+function setFamilles(list){
+  const ok = (Array.isArray(list) ? list : []).filter(f => f && f.code && f.nom);
+  if (!ok.length) return;
+  FAMILLES.splice(0, FAMILLES.length, ...ok.map(f => ({code:String(f.code), nom:String(f.nom)})));
+  rebuildFamSel(); renderArticles();
+}
+function suggestCode(nom){
+  const words = norm(nom).toUpperCase().replace(/[^A-Z0-9 ]/g, " ").split(/\s+/).filter(w => w.length > 2 || /\d/.test(w));
+  let base = words.length >= 3 ? words.slice(0, 3).map(w => w[0]).join("") : (words[0] || "FAM").slice(0, 3);
+  base = (base + "XXX").slice(0, 3);
+  let code = base, i = 2;
+  while (FAMILLES.some(f => f.code === code)) code = base.slice(0, 2) + i++;
+  return code;
+}
+let famCodeTouched = false;
+function openFamille(){
+  famCodeTouched = false;
+  $("#fm-nom").value = ""; $("#fm-code").value = ""; $("#fm-err").hidden = true;
+  $("#fm-list").textContent = FAMILLES.map(f => f.code + " · " + f.nom).join("   ");
+  $("#dlg-famille").showModal(); $("#fm-nom").focus();
+}
+$("#fm-nom").addEventListener("input", () => { if (!famCodeTouched) $("#fm-code").value = $("#fm-nom").value.trim() ? suggestCode($("#fm-nom").value) : ""; });
+$("#fm-code").addEventListener("input", () => famCodeTouched = true);
+$("#f-famille").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = m => { const p = $("#fm-err"); p.textContent = m; p.hidden = false; };
+  const nom = $("#fm-nom").value.trim(), code = $("#fm-code").value.trim().toUpperCase();
+  if (!nom) return err("Donnez un nom à la famille.");
+  if (!/^[A-Z0-9]{2,5}$/.test(code)) return err("Le code doit faire 2 à 5 lettres ou chiffres, par exemple VRD.");
+  if (FAMILLES.some(f => f.code === code)) return err("Le code " + code + " est déjà utilisé.");
+  if (FAMILLES.some(f => norm(f.nom) === norm(nom))) return err("Cette famille existe déjà.");
+  const liste = FAMILLES.map(f => ({code:f.code, nom:f.nom})).concat([{code, nom}]);
+  const btn = $("#fm-save"); btn.disabled = true;
+  try { await state.db.doc("parametres/familles").set({liste}); setFamilles(liste); $("#dlg-famille").close(); toast("Famille « " + nom + " » ajoutée (" + code + ")"); }
+  catch (x) { err(dbMsg(x)); }
+  finally { btn.disabled = false; }
+});
 function docLink(a){
   const href = a.ficheId ? blobUrl(a.ficheId) : (/^https?:\/\//i.test(a.fiche || "") ? a.fiche : "");
   if (!href) return null;
@@ -1159,7 +1233,7 @@ function searchScore(a, toks){
 }
 function visibleArticles(){
   const toks = norm(state.q).split(/[^a-z0-9]+/).filter(Boolean);
-  const ch = $("#f-chantier").value;
+  const ch = state.chantier || "";
   const base = state.articles.filter(a => (!state.filter || a.famille === state.filter) && (!ch || (ch === "__none__" ? !a.chantier : a.chantier === ch)));
   const byRef = (x, y) => String(x.ref).localeCompare(String(y.ref), "fr", {numeric:true});
   state.approx = false;
@@ -1182,14 +1256,8 @@ function fillChantiers(){
   const dl = $("#chantiers"); dl.textContent = "";
   const list = chantierList();
   for (const n of list) dl.append(el("option", {value:n}));
-  const sel = $("#f-chantier"), cur = sel.value;
-  sel.textContent = ""; sel.append(el("option", {value:"", text:"Tous les chantiers"}));
-  for (const n of list) sel.append(el("option", {value:n, text:n}));
-  if (state.articles.some(a => !a.chantier) && list.length) sel.append(el("option", {value:"__none__", text:"Sans chantier"}));
-  sel.value = [...sel.options].some(o => o.value === cur) ? cur : "";
-  sel.hidden = !list.length;
+  if (state.chantier && state.chantier !== "__none__" && !list.includes(state.chantier)) state.chantier = "";
 }
-$("#f-chantier").addEventListener("change", () => renderArticles());
 function renderArticles(){
   fillChantiers();
   renderChips();
@@ -1299,7 +1367,7 @@ function openArticle(a){
   $("#fa-qte").value = f.qteMarche == null ? "" : String(f.qteMarche).replace(".", ",");
   fillFourSelect($("#fa-fournisseur"), f.fournisseur);
   $("#fa-fabricant").value = f.fabricant || "";
-  $("#fa-chantier").value = a ? (f.chantier || "") : ($("#f-chantier").value && $("#f-chantier").value !== "__none__" ? $("#f-chantier").value : "");
+  $("#fa-chantier").value = a ? (f.chantier || "") : (state.chantier && state.chantier !== "__none__" ? state.chantier : "");
   { const dl = $("#fabricants"); dl.textContent = ""; for (const n of [...new Set(state.articles.map(x => x.fabricant).filter(Boolean))].sort((x, y) => x.localeCompare(y, "fr"))) dl.append(el("option", {value:n})); }
   $("#fa-reffour").value = f.refFournisseur || "";
   $("#fa-cond").value = f.conditionnement || "";
@@ -1488,6 +1556,7 @@ renderAll();
     if (!s.metadata.fromCache) loaded.f = true;
     renderAll(); done();
   }, () => { loaded.f = true; clearTimeout(timer); setStatus("Impossible de charger les fournisseurs. Rechargez la page plus tard.", true); });
+  db.doc("parametres/familles").onSnapshot(s => { const d = s.exists ? s.data() : null; if (d && Array.isArray(d.liste)) setFamilles(d.liste); }, () => {});
   db.collection("commandes").onSnapshot(s => {
     state.commandes = s.docs.map(d => Object.assign({_id:d.id}, d.data()));
     renderCommandes(); renderArticles();
