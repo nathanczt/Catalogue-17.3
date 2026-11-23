@@ -1,0 +1,1461 @@
+<title>Catalogue Matériaux et Fournitures</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout : bandeau d'en-tête façon étiquette de rayonnage, puis une seule colonne outil (barre d'outils, puces familles, tableau). */
+:root{
+  --bg:#f3f4f2; --surface:#ffffff; --ink:#1d2a33; --muted:#5d6b73; --line:#d9ddd9; --soft:#e9ece8;
+  --accent:#b4651c; --accent-ink:#ffffff; --accent-soft:#f6e7d8; --steel:#2f4858;
+  --danger:#b3261e; --danger-soft:#f9e3e1;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a1e; --surface:#1c2429; --ink:#e6ebec; --muted:#9aa8ae; --line:#2e3a41; --soft:#232d33;
+  --accent:#e0914a; --accent-ink:#1a1208; --accent-soft:#3a2a1b; --steel:#9fc0d2;
+  --danger:#f08a80; --danger-soft:#3b201e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a1e; --surface:#1c2429; --ink:#e6ebec; --muted:#9aa8ae; --line:#2e3a41; --soft:#232d33;
+  --accent:#e0914a; --accent-ink:#1a1208; --accent-soft:#3a2a1b; --steel:#9fc0d2;
+  --danger:#f08a80; --danger-soft:#3b201e; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{border-bottom:1px solid var(--line);background:var(--surface)}
+header.top .wrap{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;padding-block:22px 0}
+.brand{display:flex;flex-direction:column;gap:2px;min-width:0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,4.5vw,40px);line-height:1;margin:0;text-wrap:balance;letter-spacing:.01em}
+h1 span{color:var(--accent)}
+nav.tabs{display:flex;gap:4px;max-width:100%;overflow-x:auto}
+nav.tabs button{white-space:nowrap}
+.head-actions{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 16px}
+#head-add,#head-cart,#head-import{margin-bottom:8px}
+#dlg-import{width:min(1180px,calc(100vw - 24px))}
+#dlg-import .imp-body{display:flex;flex-direction:column;gap:14px}
+.imp-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 14px}
+.imp th,.imp td{padding:6px 6px;font-size:13px}
+.imp td input,.imp td select{padding:5px 7px;font-size:13px;width:100%}
+.imp td.w-des{min-width:220px}
+.imp td.w-sm{min-width:74px}
+.imp td.w-md{min-width:110px}
+.imp tbody tr{cursor:default}
+.imp tbody tr:hover td{background:none}
+.imp tr.off td{opacity:.5}
+.imp .hint{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.imp td input.pu-diff{border:2px solid var(--danger);background:var(--danger-soft);color:var(--danger);font-weight:600}
+.imp .hint.pu-diff-txt{color:var(--danger);font-weight:600;white-space:nowrap}
+@media (max-width:640px){.imp-meta{grid-template-columns:minmax(0,1fr)}}
+.cart-btn{display:inline-flex;align-items:center;gap:8px}
+.cart-n{font-family:var(--f-mono);font-size:12px;min-width:20px;padding:1px 6px;border-radius:999px;background:var(--steel);color:var(--surface);text-align:center}
+.add-cart{font:600 13px var(--f-body);padding:5px 10px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;white-space:nowrap}
+.cart-pick{display:inline-flex;gap:6px;align-items:center}
+.cart-pick .qty{width:64px;padding:5px 7px}
+td.neg{color:var(--danger);font-weight:600}
+.orders{display:flex;flex-direction:column;gap:14px}
+.order-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.order-head h3{margin:0;font-family:var(--f-display);font-size:22px;font-weight:600}
+.order-head .meta{color:var(--muted);font-size:14px}
+.order-head .meta strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.order-head .right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.order tbody tr{cursor:default}
+.order tbody tr:hover td{background:none}
+.btn.small{padding:5px 10px;font-size:13px}
+.docs-box{flex-direction:column;align-items:stretch}
+.storage{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 12px;font-size:13px;color:var(--muted)}
+.docs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.docs li{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.docs li a{flex:1 1 180px;min-width:0;overflow-wrap:anywhere;color:var(--accent);font-weight:600;font-size:14px}
+.docs li select{padding:4px 8px;font-size:13px}
+.docs li small{color:var(--muted);font-size:12px}
+.docs .none{color:var(--muted);font-size:14px}
+.docs .ana{flex-basis:100%;font-size:12.5px;color:var(--muted);border-left:2px solid var(--line);padding-left:8px}
+.docs .ana.ok{border-left-color:var(--accent);color:var(--ink)}
+input.auto,select.auto{border-color:var(--accent);background:var(--accent-soft)}
+.docs-box.over{border-color:var(--accent);background:var(--accent-soft)}
+.hist{border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.hist th,.hist td{padding:8px 10px;font-size:13px}
+.hist tbody tr{cursor:default}
+.hist tbody tr:hover td{background:none}
+.hist tfoot td{font-weight:600;background:var(--soft);border-bottom:0}
+.pack{font-size:12px;color:var(--muted);white-space:nowrap}
+.toast{max-width:calc(100vw - 32px);text-align:center}
+.add-cart.in{background:var(--accent-soft);color:var(--ink);border-color:var(--accent-soft)}
+.add-cart:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#dlg-cart{width:min(880px,calc(100vw - 24px))}
+#dlg-cart .dbody{display:block;padding:0}
+.group td{background:var(--soft);font-weight:600;font-size:13px}
+.group td.num{font-family:var(--f-mono);font-weight:500}
+.qty{width:84px;text-align:right;padding:6px 8px}
+.rm{background:none;border:0;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:4px 6px;border-radius:4px}
+.rm:hover{color:var(--danger);background:var(--danger-soft)}
+.rm.armed{color:var(--surface);background:var(--danger);font-size:12px;font-weight:600;white-space:nowrap}
+.cart-total{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px;padding:14px 20px;border-top:1px solid var(--line)}
+.cart-total strong{font-family:var(--f-display);font-size:26px;font-variant-numeric:tabular-nums}
+.cart-total span{color:var(--muted);font-size:13px}
+#dlg-cart tbody tr{cursor:default}
+#dlg-cart tbody tr:hover td{background:none}
+#dlg-cart tbody tr.group:hover td{background:var(--soft)}
+nav.tabs button{font:600 15px var(--f-body);background:none;border:0;color:var(--muted);padding:10px 14px 12px;border-bottom:3px solid transparent;cursor:pointer}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.count{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-left:4px}
+
+main .wrap{padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
+.status{font-size:14px;color:var(--muted);padding:10px 14px;border:1px dashed var(--line);border-radius:6px}
+.status.warn{color:var(--danger);border-color:var(--danger);background:var(--danger-soft)}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.search{flex:1 1 260px;min-width:0;position:relative}
+.search input{width:100%;padding-left:36px}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--muted)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 11px;min-width:0}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+.btn{font:600 14px var(--f-body);border-radius:6px;padding:9px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.danger{color:var(--danger);border-color:var(--danger);background:transparent}
+.btn.danger.armed{background:var(--danger);color:var(--surface)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 11px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chip b{font-family:var(--f-mono);font-weight:500;font-size:11px;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--steel);border-color:var(--steel);color:var(--surface)}
+.chip[aria-pressed="true"] b{color:inherit;opacity:.8}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--soft);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--soft)}
+tbody tr:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.ref{font-family:var(--f-mono);font-size:13px;font-weight:500;white-space:nowrap}
+.fam{display:inline-flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap}
+.fam i{font-style:normal;font-family:var(--f-mono);font-size:11px;padding:1px 5px;border-radius:3px;background:var(--accent-soft);color:var(--ink)}
+.num{text-align:right;white-space:nowrap}
+.sub{display:block;font-size:13px;color:var(--muted)}
+.empty{padding:40px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty h2{font-family:var(--f-display);font-size:24px;margin:0}
+.empty p{margin:0;color:var(--muted);max-width:46ch}
+
+/* Fiche */
+dialog{border:1px solid var(--line);border-radius:10px;padding:0;background:var(--surface);color:var(--ink);width:min(680px,calc(100vw - 24px));max-height:calc(100vh - 32px)}
+dialog::backdrop{background:rgba(10,16,20,.5)}
+dialog form{display:flex;flex-direction:column;max-height:calc(100vh - 34px)}
+.dhead{padding:18px 20px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.dhead h2{font-family:var(--f-display);font-size:26px;margin:0}
+.dbody{padding:16px 20px;overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:13px;font-weight:600}
+.field label em{font-style:normal;color:var(--accent)}
+.field small{color:var(--muted);font-size:12px}
+.dfoot{padding:12px 20px 16px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+.dfoot .right{display:flex;gap:8px;margin-left:auto}
+.err{grid-column:1/-1;color:var(--danger);font-size:13px;margin:0}
+.fiche-box{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;border:1px dashed var(--line);border-radius:6px;padding:10px 12px;min-width:0}
+.fiche-box.over{border-color:var(--accent);background:var(--accent-soft)}
+.fiche-cur{min-width:0;overflow-wrap:anywhere;font-size:14px;color:var(--muted)}
+.fiche-cur a{color:var(--accent);font-weight:600}
+.fiche-actions{display:flex;gap:8px}
+label.btn{display:inline-block}
+.doc-link{display:inline-block;margin-top:2px;font-size:12px;font-weight:600;color:var(--accent);text-decoration:none}
+.doc-link:hover{text-decoration:underline}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:6px;font-weight:500;font-size:14px;box-shadow:0 4px 18px rgba(0,0,0,.2)}
+
+@media (max-width:640px){
+  .dbody{grid-template-columns:minmax(0,1fr)}
+  .hide-sm{display:none}
+  nav.tabs{width:100%}
+  .head-actions{width:100%}
+  #head-add{width:100%;margin-bottom:0}
+  nav.tabs button{flex:1}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <span class="eyebrow">Référentiel achats · prix en € HT</span>
+      <h1>Catalogue <span>matériaux</span> et fournitures</h1>
+    </div>
+    <div class="head-actions">
+    <nav class="tabs" role="tablist">
+      <button id="tab-articles" role="tab" aria-selected="true" data-view="articles">Articles<span class="count" id="n-articles">0</span></button>
+      <button id="tab-fournisseurs" role="tab" aria-selected="false" data-view="fournisseurs">Fournisseurs<span class="count" id="n-fournisseurs">0</span></button>
+      <button id="tab-commandes" role="tab" aria-selected="false" data-view="commandes">Historique des commandes<span class="count" id="n-commandes">0</span></button>
+    </nav>
+    <button class="btn cart-btn" id="head-cart" type="button" hidden>Panier<span class="cart-n" id="cart-n">0</span></button>
+    <button class="btn primary write" id="head-add" type="button">+ Ajouter un article</button>
+    <button class="btn" id="head-import" type="button" hidden>Importer un devis</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="status" id="status">Chargement du catalogue…</div>
+
+    <section id="view-articles">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="toolbar">
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input id="q" type="search" placeholder="Rechercher une référence, un code GED, une désignation" aria-label="Rechercher">
+          </div>
+          <button class="btn" id="export" type="button">Exporter CSV</button>
+        </div>
+        <div class="chips" id="chips" aria-label="Filtrer par famille"></div>
+        <div class="panel">
+          <div class="scroll">
+            <table id="t-articles">
+              <thead><tr><th>Réf.</th><th>Désignation</th><th>Famille</th><th>Unité</th><th class="num">Prix HT</th><th class="num hide-sm">Qté marché</th><th class="num" id="th-restant" hidden>Qté restant</th><th class="hide-sm">Fournisseur</th><th class="hide-sm">Fabricant</th><th><span class="sr">Panier</span></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="empty" id="empty-articles" hidden>
+            <h2>Aucun article pour l'instant</h2>
+            <p>Le catalogue est vierge. Ajoutez votre premier article avec le bouton en haut : sa référence est générée à partir de sa famille (ASS-001, RSE-001…).</p>
+          </div>
+          <div class="empty nomatch" id="nomatch" hidden><p>Aucun article ne correspond à cette recherche.</p></div>
+        </div>
+        <div class="storage" id="storage" hidden><span id="storage-txt"></span><button class="btn small" type="button" id="dedupe">Fusionner les doublons</button></div>
+      </div>
+    </section>
+
+    <section id="view-fournisseurs" hidden>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="toolbar">
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input id="qf" type="search" placeholder="Rechercher un fournisseur" aria-label="Rechercher un fournisseur">
+          </div>
+          <button class="btn primary write" id="add-fournisseur" type="button">+ Ajouter un fournisseur</button>
+        </div>
+        <div class="panel">
+          <div class="scroll">
+            <table id="t-fournisseurs">
+              <thead><tr><th>Code</th><th>Nom</th><th>Contact</th><th class="hide-sm">Familles</th><th class="num hide-sm">Franco</th><th class="num">Délai</th><th class="num hide-sm">Remise</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="empty" id="empty-fournisseurs" hidden>
+            <h2>Aucun fournisseur enregistré</h2>
+            <p>Ajoutez vos fournisseurs pour les rattacher aux articles et retrouver leurs conditions (franco, délai, remise).</p>
+            <button class="btn primary write" type="button" data-add="fournisseur">+ Ajouter un fournisseur</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-commandes" hidden>
+      <div class="orders" id="orders"></div>
+      <div class="panel" id="orders-empty">
+        <div class="empty">
+          <h2>Aucune commande pour l'instant</h2>
+          <p>Chaque panier validé s'enregistre ici avec sa date et ses quantités.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<dialog id="dlg-article">
+  <form id="f-article" novalidate>
+    <div class="dhead"><h2 id="fa-title">Nouvel article</h2><span class="ref" id="fa-refshow"></span></div>
+    <div class="dbody">
+      <div class="field"><label for="fa-famille">Famille <em>*</em></label><select id="fa-famille" required></select></div>
+      <div class="field"><label for="fa-ref">Référence <em>*</em></label><input id="fa-ref" required><small>Proposée automatiquement, modifiable.</small></div>
+      <div class="field"><label for="fa-ged">Code GED</label><input id="fa-ged" placeholder="Numéro du produit"></div>
+      <div class="field"><label for="fa-unite">Unité de vente <em>*</em></label><input id="fa-unite" required placeholder="Ex. ml, tonne, pièce" list="units"></div>
+      <div class="field full"><label for="fa-designation">Désignation commerciale <em>*</em></label><input id="fa-designation" required placeholder="Ex. Tuyau PVC CR8 Ø 200"><small>Libellé du fournisseur, rempli automatiquement depuis le devis.</small></div>
+      <div class="field full"><label for="fa-perso">Désignation perso</label><input id="fa-perso" placeholder="Votre propre libellé (facultatif)"><small>Affichée en priorité dans le catalogue, le panier et les commandes.</small></div>
+      <div class="field"><label for="fa-prix">Prix (€ HT)</label><input id="fa-prix" inputmode="decimal" placeholder="0,00"></div>
+      <div class="field"><label for="fa-qte">Quantité marché</label><input id="fa-qte" inputmode="decimal" placeholder="Pour information"></div>
+      <div class="field"><label for="fa-fournisseur">Fournisseur</label><input id="fa-fournisseur" list="fournisseurs-dl" placeholder="Choisir dans la liste ou saisir" autocomplete="off"><small>Un nouveau nom est ajouté aux fournisseurs à l'enregistrement.</small></div>
+      <div class="field"><label for="fa-fabricant">Fabricant</label><input id="fa-fabricant" list="fabricants" placeholder="Choisir dans la liste ou saisir" autocomplete="off"><small>Un nouveau nom sera proposé dans la liste ensuite.</small></div>
+      <div class="field"><label for="fa-reffour">Réf. fournisseur</label><input id="fa-reffour"></div>
+      <div class="field"><label for="fa-cond">Conditionnement</label><input id="fa-cond" placeholder="Ex. Barre de 2,40 m"></div>
+      <div class="field"><label for="fa-condqte">Quantité par conditionnement</label><input id="fa-condqte" inputmode="decimal" placeholder="Ex. 2,40"><small>Dans l'unité de vente. Le panier arrondit au conditionnement supérieur.</small></div>
+      <div class="field"><label for="fa-delai">Délai de livraison (jours)</label><input id="fa-delai" inputmode="numeric"></div>
+      <div class="field"><label for="fa-norme">Norme / certification</label><input id="fa-norme" placeholder="Ex. NF EN 1401"></div>
+      <div class="field full"><label for="fa-file">Fiche technique</label>
+        <div class="fiche-box" id="fa-drop">
+          <span id="fa-file-cur" class="fiche-cur">Aucune fiche jointe</span>
+          <div class="fiche-actions">
+            <label class="btn" id="fa-file-pick" for="fa-file">Joindre un fichier</label>
+            <input id="fa-file" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" hidden>
+            <button class="btn" type="button" id="fa-file-del" hidden>Retirer</button>
+          </div>
+        </div>
+        <small id="fa-file-hint">Glissez un fichier ici ou cliquez sur Joindre. PDF ou image, 20 Mo maximum.</small>
+      </div>
+      <div class="field full"><label for="fa-fiche">Ou lien vers la fiche</label><input id="fa-fiche" type="url" placeholder="https://"></div>
+      <div class="field full"><label for="fa-rem">Remarques</label><textarea id="fa-rem" rows="2"></textarea></div>
+      <div class="field full"><label for="fa-docs-file">Devis et contrats</label>
+        <div class="fiche-box docs-box" id="fa-docs-drop">
+          <ul class="docs" id="fa-docs-list"></ul>
+          <div class="fiche-actions">
+            <label class="btn" id="fa-docs-pick" for="fa-docs-file">Importer des fichiers</label>
+            <input id="fa-docs-file" type="file" multiple accept="application/pdf,image/png,image/jpeg,image/webp" hidden>
+          </div>
+        </div>
+        <small id="fa-docs-hint">Glissez un ou plusieurs fichiers ici ou cliquez sur Importer. PDF ou image, 20 Mo maximum chacun.</small>
+      </div>
+      <div class="field full" id="fa-hist" hidden>
+        <label>Historique des commandes</label>
+        <div class="hist">
+          <div class="scroll"><table>
+            <thead><tr><th>Date</th><th>Commande</th><th class="num">Quantité</th><th class="num">Total HT</th><th><span class="sr">Supprimer</span></th></tr></thead>
+            <tbody id="fa-hist-rows"></tbody>
+            <tfoot><tr><td colspan="2">Cumul commandé</td><td class="num" id="fa-hist-qte"></td><td class="num" id="fa-hist-tot"></td><td></td></tr></tfoot>
+          </table></div>
+        </div>
+        <small id="fa-hist-note"></small>
+      </div>
+      <p class="err" id="fa-err" hidden></p>
+    </div>
+    <div class="dfoot">
+      <button class="btn danger write" type="button" id="fa-del" hidden>Supprimer</button>
+      <div class="right">
+        <button class="btn" type="button" data-close>Annuler</button>
+        <button class="btn primary write" type="submit" id="fa-save">Enregistrer</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-fournisseur">
+  <form id="f-fournisseur" novalidate>
+    <div class="dhead"><h2 id="ff-title">Nouveau fournisseur</h2></div>
+    <div class="dbody">
+      <div class="field"><label for="ff-code">Code <em>*</em></label><input id="ff-code" required placeholder="Ex. F01"></div>
+      <div class="field"><label for="ff-nom">Nom <em>*</em></label><input id="ff-nom" required></div>
+      <div class="field"><label for="ff-contact">Contact</label><input id="ff-contact" placeholder="Nom de l'interlocuteur"></div>
+      <div class="field"><label for="ff-tel">Téléphone</label><input id="ff-tel" type="tel"></div>
+      <div class="field full"><label for="ff-mail">E-mail</label><input id="ff-mail" type="email"></div>
+      <div class="field full"><label for="ff-familles">Familles couvertes</label><input id="ff-familles" placeholder="Ex. Assainissement, Réseaux secs"></div>
+      <div class="field"><label for="ff-franco">Franco de port (€ HT)</label><input id="ff-franco" inputmode="decimal"></div>
+      <div class="field"><label for="ff-delai">Délai (jours)</label><input id="ff-delai" inputmode="numeric"></div>
+      <div class="field"><label for="ff-remise">Remise négociée (%)</label><input id="ff-remise" inputmode="decimal"></div>
+      <div class="field full"><label for="ff-rem">Remarques</label><textarea id="ff-rem" rows="2"></textarea></div>
+      <p class="err" id="ff-err" hidden></p>
+    </div>
+    <div class="dfoot">
+      <button class="btn danger write" type="button" id="ff-del" hidden>Supprimer</button>
+      <div class="right">
+        <button class="btn" type="button" data-close>Annuler</button>
+        <button class="btn primary write" type="submit" id="ff-save">Enregistrer</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-cart">
+  <form id="f-cart" novalidate>
+    <div class="dhead"><h2>Panier</h2><span class="eyebrow" id="cart-sub"></span></div>
+    <div class="dbody">
+      <div class="scroll">
+        <table id="t-cart">
+          <thead><tr><th>Réf.</th><th>Désignation</th><th class="num">Prix HT</th><th class="num">Quantité</th><th class="num">Total HT</th><th><span class="sr">Retirer</span></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="empty" id="cart-empty" hidden><h2>Panier vide</h2><p>Cliquez sur « Ajouter » dans la liste des articles pour préparer une commande.</p></div>
+      <div class="cart-total" id="cart-total"><span id="cart-note"></span><strong id="cart-sum">0,00 €</strong></div>
+    </div>
+    <div class="dfoot">
+      <button class="btn danger" type="button" id="cart-clear">Vider le panier</button>
+      <div class="right">
+        <button class="btn" type="button" id="cart-export">Exporter CSV</button>
+        <button class="btn" type="button" data-close>Fermer</button>
+        <button class="btn primary" type="button" id="cart-validate">Valider</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-import">
+  <form id="f-import" novalidate>
+    <div class="dhead"><h2>Importer un devis</h2><span class="eyebrow" id="imp-sub"></span></div>
+    <div class="dbody imp-body">
+      <div id="imp-step1">
+        <div class="fiche-box docs-box" id="imp-drop">
+          <p class="none" id="imp-msg"></p>
+          <div class="fiche-actions"><label class="btn" for="imp-file" id="imp-pick">Choisir le devis</label><input id="imp-file" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" hidden></div>
+        </div>
+      </div>
+      <div id="imp-step2" hidden>
+        <div class="imp-meta">
+          <div class="field"><label for="imp-four">Fournisseur</label><input id="imp-four" list="fournisseurs-dl" autocomplete="off"></div>
+          <div class="field"><label for="imp-num">N° de devis</label><input id="imp-num"></div>
+          <div class="field"><label for="imp-date">Date du devis</label><input id="imp-date" type="date"></div>
+        </div>
+        <p class="sub" style="margin:10px 0 8px">Vérifiez chaque ligne : prix HT uniquement. Choisissez de créer un article, de mettre à jour un article existant ou d'ignorer la ligne.</p>
+        <div class="panel"><div class="scroll"><table class="imp">
+          <thead><tr><th>Action</th><th>Famille</th><th>Désignation commerciale</th><th>Désignation perso</th><th>Unité</th><th class="num">Prix HT (€)</th><th>Conditionnement</th><th class="num">Qté/cond.</th><th>Réf. fournisseur</th><th>Fabricant</th></tr></thead>
+          <tbody id="imp-rows"></tbody>
+        </table></div></div>
+      </div>
+      <p class="err" id="imp-err" hidden></p>
+    </div>
+    <div class="dfoot">
+      <button class="btn" type="button" id="imp-reset" hidden>Choisir un autre devis</button>
+      <div class="right">
+        <button class="btn" type="button" data-close>Annuler</button>
+        <button class="btn primary" type="button" id="imp-go" disabled>Importer</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<datalist id="fabricants"></datalist>
+<datalist id="fournisseurs-dl"></datalist>
+<datalist id="units"><option value="Pièce"><option value="ml"><option value="m²"><option value="m³"><option value="Tonne"><option value="Kg"><option value="Sac 35 kg"><option value="Barre de 6 m"><option value="Couronne 100 m"><option value="Palette"></datalist>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script>
+const FAMILLES = [
+  {code:"ASS", nom:"Assainissement"},
+  {code:"RSE", nom:"Réseaux secs"},
+  {code:"REM", nom:"Matériaux de remblais"},
+  {code:"MAC", nom:"Maçonnerie"},
+];
+const dispName = a => a ? (a.designationPerso || a.designation || "") : "";
+const famNom = c => (FAMILLES.find(f => f.code === c) || {nom:c || "—"}).nom;
+const $ = s => document.querySelector(s);
+const state = {articles:[], fournisseurs:[], filter:"", q:"", qf:"", canWrite:true, db:null, downloads:null, assets:null, editing:null, editingF:null, fiche:null};
+const blobUrl = id => "/_blob/" + id;
+
+const euro = v => (v === null || v === undefined || v === "" || isNaN(v)) ? "—" : Number(v).toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " €";
+const parseNum = s => { s = String(s || "").trim().replace(/\s/g,"").replace(",","."); if (!s) return null; const n = Number(s); return isNaN(n) ? NaN : n; };
+const norm = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+function el(tag, props, ...kids){ const e = document.createElement(tag); if (props) for (const k in props){ if (k === "class") e.className = props[k]; else if (k === "text") e.textContent = props[k]; else e.setAttribute(k, props[k]); } for (const k of kids) if (k != null) e.append(k); return e; }
+
+let toastT;
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 4000); }
+function setStatus(msg, warn){ const s = $("#status"); if (!msg){ s.hidden = true; return; } s.hidden = false; s.textContent = msg; s.classList.toggle("warn", !!warn); }
+
+/* ---------- Onglets ---------- */
+function showView(v){
+  for (const b of document.querySelectorAll("nav.tabs button")) b.setAttribute("aria-selected", String(b.dataset.view === v));
+  $("#view-articles").hidden = v !== "articles";
+  $("#view-fournisseurs").hidden = v !== "fournisseurs";
+  $("#view-commandes").hidden = v !== "commandes";
+  try { localStorage.setItem("cat-view", v); } catch(e){}
+}
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => showView(b.dataset.view)));
+try { const v = localStorage.getItem("cat-view"); if (v === "fournisseurs" || v === "commandes") showView(v); } catch(e){}
+
+/* ---------- Rendu articles ---------- */
+function renderChips(){
+  const box = $("#chips"); box.textContent = "";
+  const counts = {}; for (const a of state.articles) counts[a.famille] = (counts[a.famille] || 0) + 1;
+  const mk = (code, label, n) => { const c = el("button", {class:"chip", type:"button", "aria-pressed": String(state.filter === code)}, label, el("b", {text:String(n)})); c.addEventListener("click", () => { state.filter = state.filter === code && code !== "" ? "" : code; renderArticles(); }); return c; };
+  box.append(mk("", "Toutes les familles", state.articles.length));
+  for (const f of FAMILLES) box.append(mk(f.code, f.nom, counts[f.code] || 0));
+}
+function docLink(a){
+  const href = a.ficheId ? blobUrl(a.ficheId) : (/^https?:\/\//i.test(a.fiche || "") ? a.fiche : "");
+  if (!href) return null;
+  const l = el("a", {class:"doc-link", href, target:"_blank", rel:"noopener", text:"Fiche technique ↗" + (Array.isArray(a.documents) && a.documents.length ? " · " + a.documents.length + " devis/contrat" + (a.documents.length > 1 ? "s" : "") : "")});
+  l.addEventListener("click", e => e.stopPropagation());
+  l.addEventListener("keydown", e => e.stopPropagation());
+  return el("span", {class:"sub"}, l);
+}
+function renderFiche(){
+  const cur = $("#fa-file-cur"); cur.textContent = "";
+  const f = state.fiche;
+  if (f && f.id) cur.append(el("a", {href:blobUrl(f.id), target:"_blank", rel:"noopener", text:f.nom || "Fiche jointe"}));
+  else cur.textContent = "Aucune fiche jointe";
+  const can = !!state.assets && state.canWrite;
+  $("#fa-file-pick").hidden = !can;
+  $("#fa-file-pick").textContent = f && f.id ? "Remplacer" : "Joindre un fichier";
+  $("#fa-file-del").hidden = !can || !(f && f.id);
+  $("#fa-file-hint").textContent = can ? "Glissez un fichier ici ou cliquez sur Joindre. PDF ou image, 20 Mo maximum." : "Seuls les éditeurs du catalogue peuvent joindre un fichier.";
+}
+$("#fa-file").addEventListener("change", e => {
+  const file = e.target.files && e.target.files[0]; e.target.value = "";
+  uploadFiche(file);
+});
+const drop = $("#fa-drop");
+["dragenter", "dragover"].forEach(t => drop.addEventListener(t, e => { if (!state.assets || !state.canWrite) return; e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "dragend"].forEach(t => drop.addEventListener(t, () => drop.classList.remove("over")));
+drop.addEventListener("drop", e => {
+  e.preventDefault(); drop.classList.remove("over");
+  if (!state.assets || !state.canWrite) return;
+  const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  uploadFiche(file);
+});
+async function uploadFiche(file){
+  if (!file || !state.assets) return;
+  $("#fa-err").hidden = true;
+  const type = file.type || (/\.pdf$/i.test(file.name) ? "application/pdf" : "");
+  const cur = $("#fa-file-cur"); cur.textContent = "Envoi de " + file.name + "…";
+  $("#fa-save").disabled = true;
+  try {
+    const h = await sha256(file).catch(() => null);
+    const dup = h ? findAssetByHash(h) : null; const reusedId = dup ? dup.id : null;
+    const r = dup ? {id:dup.id} : await state.assets.upload(file, type ? {type} : undefined);
+    state.fiche = {id:r.id, nom:file.name, hash:h || ""};
+    if (reusedId) toast("Fichier déjà présent dans le catalogue : réutilisé sans nouvel envoi");
+  } catch (x) {
+    const c = x && x.code;
+    const p = $("#fa-err"); p.hidden = false;
+    p.textContent = c === "too_large" ? "Fichier trop lourd : 20 Mo maximum." : c === "unsupported_type" ? "Format non accepté : joignez un PDF ou une image (PNG, JPEG, WebP)." : c === "quota_or_state" ? "L'espace de stockage du catalogue est plein." : "L'envoi du fichier a échoué. Réessayez.";
+  } finally { $("#fa-save").disabled = false; renderFiche(); }
+}
+$("#fa-file-del").addEventListener("click", () => { state.fiche = null; renderFiche(); });
+/* ---------- Panier (propre à chaque personne) ---------- */
+state.cart = {}; let cartRef = null, cartSaving = false, cartAgain = false, cartTimer = null;
+const fmtQty = q => Number(q).toLocaleString("fr-FR", {maximumFractionDigits:3});
+const fmtIn = q => String(q).replace(".", ",");
+function packOf(a){
+  if (!a) return null;
+  let size = Number(a.condQte);
+  if (!(size > 0)) { const m = /(\d+(?:[.,]\d+)?)/.exec(a.conditionnement || ""); size = m ? Number(m[1].replace(",", ".")) : 0; }
+  if (!(size > 0)) return null;
+  const w = ((a.conditionnement || "").trim().split(/\s+/)[0] || "").toLowerCase();
+  return {size, nom: !w || /\d/.test(w) ? "pièce" : w};
+}
+const plural = (w, n) => n > 1 && !/[sx]$/.test(w) ? w + "s" : w;
+function roundPack(a, n){
+  const p = packOf(a);
+  if (!p) return {q:n, pieces:null, p:null};
+  const pieces = Math.max(1, Math.ceil(n / p.size - 1e-9));
+  return {q: Math.round(pieces * p.size * 1000) / 1000, pieces, p};
+}
+const eff = (a, q) => a ? roundPack(a, q).q : q;
+function packText(a, q){ const r = a ? roundPack(a, q) : {}; return r.p ? r.pieces + " " + plural(r.p.nom, r.pieces) : ""; }
+function packMsg(a, n, r, wasIn){
+  const u = a.unite ? " " + a.unite : "";
+  let m = (a.ref || "Article") + " : ";
+  m += r.p ? r.pieces + " " + plural(r.p.nom, r.pieces) + " = " + fmtQty(r.q) + u : fmtQty(r.q) + u;
+  if (r.q !== n) m += " (arrondi depuis " + fmtQty(n) + u + ")";
+  return m + (wasIn ? ", quantité mise à jour" : " ajouté au panier");
+}
+function cartButton(a){
+  if (!cartRef) return null;
+  const q = state.cart[a._id];
+  const wrap = el("span", {class:"cart-pick"});
+  const input = el("input", {class:"qty", inputmode:"decimal", value: q ? fmtIn(eff(a, q)) : "1", "aria-label":"Quantité à ajouter pour " + (a.ref || "")});
+  const b = el("button", {type:"button", class:"add-cart" + (q ? " in" : ""), text: q ? "✓ Modifier" : "Ajouter"});
+  const go = () => {
+    const n = parseNum(input.value);
+    if (n == null || Number.isNaN(n) || n <= 0) { toast("Saisissez une quantité supérieure à 0"); input.focus(); return; }
+    const r = roundPack(a, n);
+    setQty(a._id, r.q);
+    toast(packMsg(a, n, r, !!q));
+  };
+  b.addEventListener("click", go);
+  input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); go(); } });
+  input.addEventListener("focus", () => input.select());
+  for (const t of ["click", "keydown"]) wrap.addEventListener(t, e => e.stopPropagation());
+  wrap.append(input, b);
+  if (q && packText(a, q)) wrap.append(el("span", {class:"pack", text:packText(a, q)}));
+  return wrap;
+}
+function setQty(id, q){
+  state.valide = null;
+  if (!(q > 0)) delete state.cart[id]; else state.cart[id] = q;
+  renderArticles(); renderCartBadge(); if ($("#dlg-cart").open) renderCart();
+  clearTimeout(cartTimer); cartTimer = setTimeout(saveCart, 600);
+}
+async function saveCart(){
+  cartTimer = null;
+  if (!cartRef) return;
+  if (cartSaving) { cartAgain = true; return; }
+  cartSaving = true;
+  try { await cartRef.set({items: Object.assign({}, state.cart), valide: state.valide || null, dernierValide: state.dernier || null, majLe: new Date().toISOString()}); }
+  catch (e) { toast("Le panier n'a pas pu être enregistré"); }
+  finally { cartSaving = false; if (cartAgain) { cartAgain = false; saveCart(); } }
+}
+function renderCartBadge(){ $("#cart-n").textContent = Object.keys(state.cart).length; }
+function cartLines(){
+  return Object.keys(state.cart).map(id => ({id, q: state.cart[id], a: state.articles.find(x => x._id === id)}))
+    .sort((x, y) => (fourNom(x.a && x.a.fournisseur) || "~").localeCompare(fourNom(y.a && y.a.fournisseur) || "~", "fr") || String(x.a ? x.a.ref : x.id).localeCompare(String(y.a ? y.a.ref : y.id), "fr", {numeric:true}));
+}
+function renderCart(){
+  const tb = $("#t-cart tbody"); tb.textContent = "";
+  const lines = cartLines();
+  let total = 0, noPrice = 0, group = null, groupRow = null, groupSum = 0;
+  const closeGroup = () => { if (groupRow) groupRow.lastChild.previousSibling.textContent = euro(groupSum); };
+  for (const l of lines){
+    const g = (l.a && fourNom(l.a.fournisseur)) || "Sans fournisseur";
+    if (g !== group){ closeGroup(); group = g; groupSum = 0; groupRow = el("tr", {class:"group"}, el("td", {colspan:"4", text:g}), el("td", {class:"num"}), el("td")); tb.append(groupRow); }
+    const prix = l.a && l.a.prix != null && l.a.prix !== "" ? Number(l.a.prix) : null;
+    const eq = eff(l.a, l.q);
+    const line = prix == null ? null : prix * eq;
+    if (line == null) noPrice++; else { total += line; groupSum += line; }
+    const qty = el("input", {class:"qty", inputmode:"decimal", value:fmtIn(eq), "aria-label":"Quantité " + (l.a ? l.a.ref : "")});
+    qty.addEventListener("change", () => { const n = parseNum(qty.value); if (Number.isNaN(n) || n == null) { qty.value = fmtIn(eq); return; } if (!l.a || n <= 0) { setQty(l.id, n); return; } const r = roundPack(l.a, n); setQty(l.id, r.q); if (r.q !== n) toast(packMsg(l.a, n, r, true)); });
+    const rm = el("button", {type:"button", class:"rm", "aria-label":"Retirer du panier", text:"×"});
+    rm.addEventListener("click", () => setQty(l.id, 0));
+    tb.append(el("tr", null,
+      el("td", null, el("span", {class:"ref", text: l.a ? l.a.ref : l.id})),
+      el("td", null, l.a ? dispName(l.a) : "Article supprimé du catalogue", l.a && l.a.unite ? el("span", {class:"sub", text:l.a.unite}) : null),
+      el("td", {class:"num", text:euro(prix)}),
+      el("td", {class:"num"}, qty, packText(l.a, l.q) ? el("span", {class:"sub", text:packText(l.a, l.q)}) : null),
+      el("td", {class:"num", text:euro(line)}),
+      el("td", null, rm)));
+  }
+  closeGroup();
+  const none = lines.length === 0;
+  $("#t-cart").hidden = none; $("#cart-empty").hidden = !none; $("#cart-total").hidden = none;
+  $("#cart-clear").disabled = none; $("#cart-export").disabled = none;
+  $("#cart-export").hidden = !state.downloads;
+  $("#cart-sum").textContent = euro(total);
+  $("#cart-note").textContent = "Total HT" + (noPrice ? " · " + noPrice + " article" + (noPrice > 1 ? "s" : "") + " sans prix non compté" + (noPrice > 1 ? "s" : "") : "");
+  const v = state.valide ? new Date(state.valide) : null;
+  $("#cart-sub").textContent = lines.length + " article" + (lines.length > 1 ? "s" : "") + (v ? " · Validé le " + v.toLocaleDateString("fr-FR") + " à " + v.toLocaleTimeString("fr-FR", {hour:"2-digit", minute:"2-digit"}) : "");
+  const vb = $("#cart-validate");
+  vb.disabled = none || !!v;
+  vb.textContent = v ? "✓ Validé" : "Valider";
+}
+state.valide = null; state.dernier = null;
+$("#cart-validate").addEventListener("click", () => {
+  if (!Object.keys(state.cart).length) return;
+  state.valide = new Date().toISOString();
+  state.dernier = {items: Object.assign({}, state.cart), le: state.valide};
+  renderCart(); clearTimeout(cartTimer); saveCart();
+  createOrder(state.valide);
+});
+async function createOrder(le){
+  const d = new Date(le), p2 = n => String(n).padStart(2, "0");
+  const id = "CMD-" + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + "-" + p2(d.getHours()) + p2(d.getMinutes()) + p2(d.getSeconds());
+  let total = 0;
+  const lignes = cartLines().map(l => {
+    const a = l.a || {}; const q = eff(l.a, l.q); const r = l.a ? roundPack(l.a, l.q) : {};
+    const prix = a.prix != null && a.prix !== "" ? Number(a.prix) : null; const t = prix == null ? null : Math.round(prix * q * 100) / 100;
+    if (t != null) total += t;
+    return {id: l.id, ref: a.ref || l.id, codeGed: a.codeGed || "", designation: dispName(a) || "Article supprimé", designationCommerciale: a.designation || "", unite: a.unite || "", fournisseur: fourNom(a.fournisseur) || "", fabricant: a.fabricant || "", qte: q, conditionnement: r.p ? r.pieces + " " + plural(r.p.nom, r.pieces) : "", prix, total: t};
+  });
+  if (!state.db) { toast("Panier validé, mais la commande n'a pas pu être enregistrée"); return; }
+  try {
+    await state.db.collection("commandes").doc(id).set({numero: id, le, lignes, total: Math.round(total * 100) / 100});
+    toast("Panier validé : commande " + id + " ajoutée à l'historique");
+  } catch (x) { toast("Panier validé, mais la commande n'a pas pu être enregistrée"); }
+}
+function orderedQty(id){
+  let q = 0;
+  for (const o of state.commandes) for (const l of (Array.isArray(o.lignes) ? o.lignes : [])) if (l.id === id) q += Number(l.qte) || 0;
+  return Math.round(q * 1000) / 1000;
+}
+function lineDeleteButton(o, l){
+  const b = el("button", {type:"button", class:"rm", text:"×", "aria-label":"Supprimer la ligne " + (l.ref || "") + " de la commande " + (o.numero || o._id)});
+  b.hidden = !state.canWrite;
+  b.addEventListener("click", async e => {
+    e.stopPropagation();
+    if (!b.dataset.armed){ b.dataset.armed = "1"; b.classList.add("armed"); b.textContent = "Supprimer ?"; return; }
+    const reste = (Array.isArray(o.lignes) ? o.lignes : []).filter(x => x !== l);
+    const ref = state.db.collection("commandes").doc(o._id);
+    try {
+      if (!reste.length) await ref.delete();
+      else await ref.update({lignes: reste, total: Math.round(reste.reduce((s, x) => s + (x.total != null ? Number(x.total) : 0), 0) * 100) / 100});
+      toast("Ligne " + (l.ref || "") + " retirée de " + (o.numero || o._id) + (reste.length ? "" : " (commande vide supprimée)"));
+    } catch (x) { toast(dbMsg(x)); }
+  });
+  return b;
+}
+/* ---------- Devis et contrats ---------- */
+state.docs = [];
+let docsUploading = 0;
+function renderDocs(){
+  const ul = $("#fa-docs-list"); ul.textContent = "";
+  const can = !!state.assets && state.canWrite;
+  if (!state.docs.length) ul.append(el("li", {class:"none", text:"Aucun devis ni contrat joint"}));
+  state.docs.forEach((d, i) => {
+    const li = el("li");
+    const sel = el("select", {"aria-label":"Type de document"});
+    for (const t of ["Devis", "Contrat", "Autre"]) sel.append(el("option", {value:t, text:t}));
+    sel.value = d.type || "Devis"; sel.disabled = !state.canWrite;
+    sel.addEventListener("change", () => { d.type = sel.value; });
+    li.append(sel, el("a", {href:blobUrl(d.id), target:"_blank", rel:"noopener", text:d.nom || "Document"}));
+    if (d.le) li.append(el("small", {text:"ajouté le " + new Date(d.le).toLocaleDateString("fr-FR")}));
+    if (can) { const rm = el("button", {type:"button", class:"rm", text:"×", "aria-label":"Retirer " + (d.nom || "le document")}); rm.addEventListener("click", () => { state.docs.splice(i, 1); renderDocs(); }); li.append(rm); }
+    if (d.analyse) li.append(el("span", {class:"ana" + (d.analyseOk ? " ok" : ""), text:d.analyse}));
+    if (state.sample && can && d.type !== "Contrat" && d.analyse !== "Lecture du devis en cours…") {
+      const rb = el("button", {type:"button", class:"btn small", text: d.analyse ? "Relire" : "Lire le devis"});
+      rb.addEventListener("click", async () => { try { const blob = await (await fetch(blobUrl(d.id))).blob(); analyseDevis(d, blob); } catch (e) { d.analyse = "Impossible de relire ce fichier."; renderDocs(); } });
+      li.append(rb);
+    }
+    ul.append(li);
+  });
+  if (docsUploading) ul.append(el("li", {class:"none", text:"Envoi de " + docsUploading + " fichier" + (docsUploading > 1 ? "s" : "") + "…"}));
+  $("#fa-docs-pick").hidden = !can;
+  $("#fa-docs-hint").textContent = can ? "Glissez un ou plusieurs fichiers ici ou cliquez sur Importer. PDF ou image, 20 Mo maximum chacun." + (state.sample ? " Un devis est lu automatiquement pour remplir la fiche (prix HT) : mettez dans la désignation de quoi repérer la bonne ligne." : "") + " Pensez à enregistrer l'article." : "Seuls les éditeurs du catalogue peuvent joindre des devis et contrats.";
+}
+async function uploadDocs(files){
+  files = Array.from(files || []);
+  if (!files.length || !state.assets) return;
+  $("#fa-err").hidden = true;
+  const errs = []; let reused = 0, already = 0;
+  docsUploading += files.length; $("#fa-save").disabled = true; renderDocs();
+  for (const file of files){
+    const type = file.type || (/\.pdf$/i.test(file.name) ? "application/pdf" : "");
+    const guess = /contrat/i.test(file.name) ? "Contrat" : "Devis";
+    try {
+      const h = await sha256(file).catch(() => null);
+      const dup = h ? findAssetByHash(h) : null;
+      if (dup && state.docs.some(d => d.id === dup.id)) { already++; docsUploading--; renderDocs(); continue; }
+      if (dup) reused++;
+      const r = dup ? {id:dup.id} : await state.assets.upload(file, type ? {type} : undefined);
+      const doc = {id:r.id, nom:file.name, type:guess, le:new Date().toISOString(), hash:h || ""};
+      state.docs.push(doc);
+      if (state.sample && guess !== "Contrat") analyseDevis(doc, file);
+    }
+    catch (x) { const c = x && x.code; errs.push(file.name + " : " + (c === "too_large" ? "trop lourd (20 Mo maximum)" : c === "unsupported_type" ? "format non accepté, joignez un PDF ou une image" : c === "quota_or_state" ? "stockage plein" : "envoi échoué")); }
+    docsUploading--; renderDocs();
+  }
+  $("#fa-save").disabled = false;
+  if (reused || already) toast([reused ? reused + " fichier" + (reused > 1 ? "s" : "") + " déjà présent" + (reused > 1 ? "s" : "") + " dans le catalogue, réutilisé" + (reused > 1 ? "s" : "") + " sans nouvel envoi" : "", already ? already + " déjà joint" + (already > 1 ? "s" : "") + " à cet article" : ""].filter(Boolean).join(" · "));
+  if (errs.length) { const p = $("#fa-err"); p.textContent = errs.join(" · "); p.hidden = false; }
+}
+$("#fa-docs-file").addEventListener("change", e => { const fs = e.target.files; uploadDocs(fs); e.target.value = ""; });
+{
+  const dz = $("#fa-docs-drop");
+  ["dragenter", "dragover"].forEach(t => dz.addEventListener(t, e => { if (!state.assets || !state.canWrite) return; e.preventDefault(); dz.classList.add("over"); }));
+  ["dragleave", "dragend"].forEach(t => dz.addEventListener(t, () => dz.classList.remove("over")));
+  dz.addEventListener("drop", e => { e.preventDefault(); dz.classList.remove("over"); if (!state.assets || !state.canWrite) return; uploadDocs(e.dataTransfer && e.dataTransfer.files); });
+}
+/* ---------- Fichiers en double ---------- */
+async function sha256(blob){
+  const buf = await crypto.subtle.digest("SHA-256", await blob.arrayBuffer());
+  return Array.from(new Uint8Array(buf), x => x.toString(16).padStart(2, "0")).join("");
+}
+function findAssetByHash(h){
+  for (const d of state.docs) if (d.hash === h && d.id) return {id:d.id};
+  if (state.fiche && state.fiche.hash === h) return {id:state.fiche.id};
+  for (const a of state.articles){
+    if (a.ficheHash === h && a.ficheId) return {id:a.ficheId};
+    for (const d of (Array.isArray(a.documents) ? a.documents : [])) if (d.hash === h && d.id) return {id:d.id};
+  }
+  return null;
+}
+const mo = b => (b / 1048576).toLocaleString("fr-FR", {maximumFractionDigits:1}) + " Mo";
+async function refreshStorage(){
+  if (!state.assets || !state.canWrite) { $("#storage").hidden = true; return; }
+  try { const l = await state.assets.list(); $("#storage-txt").textContent = "Stockage : " + l.usage.files + " fichier" + (l.usage.files > 1 ? "s" : "") + " · " + mo(l.usage.bytes) + " sur " + mo(l.usage.maxBytes); $("#storage").hidden = false; }
+  catch (e) { $("#storage").hidden = true; }
+}
+$("#dedupe").addEventListener("click", async e => {
+  const b = e.currentTarget;
+  if (!b.dataset.armed) { b.dataset.armed = "1"; b.classList.add("armed"); b.textContent = "Confirmer : fusionner et supprimer les fichiers inutiles"; return; }
+  b.disabled = true; b.textContent = "Analyse des fichiers…";
+  try {
+    const {assets:list} = await state.assets.list();
+    const hashOf = new Map();
+    for (const as of list) { try { hashOf.set(as.id, await sha256(await (await fetch(as.url)).blob())); } catch (x) {} }
+    const canon = new Map();
+    for (const as of list) { const h = hashOf.get(as.id); if (h && !canon.has(h)) canon.set(h, as.id); }
+    const keep = id => { const h = hashOf.get(id); return h ? canon.get(h) : id; };
+    const used = new Set(); let changed = 0;
+    for (const a of state.articles) {
+      const upd = {};
+      if (a.ficheId) { const c = keep(a.ficheId), h = hashOf.get(a.ficheId) || a.ficheHash || ""; used.add(c); if (c !== a.ficheId || h !== (a.ficheHash || "")) { upd.ficheId = c; upd.ficheHash = h; } }
+      if (Array.isArray(a.documents) && a.documents.length) {
+        const seen = new Set(), docs = []; let ch = false;
+        for (const d of a.documents) { const c = keep(d.id), h = hashOf.get(d.id) || d.hash || ""; if (seen.has(c)) { ch = true; continue; } seen.add(c); used.add(c); if (c !== d.id || h !== (d.hash || "")) ch = true; docs.push(Object.assign({}, d, {id:c, hash:h})); }
+        if (ch) upd.documents = docs;
+      }
+      if (Object.keys(upd).length) { await state.db.collection("articles").doc(a._id).update(upd); changed++; }
+    }
+    let dupes = 0, orphans = 0, freed = 0;
+    for (const as of list) {
+      if (used.has(as.id)) continue;
+      const h = hashOf.get(as.id);
+      if (!h) continue;
+      await state.assets.delete(as.id);
+      freed += as.sizeBytes || 0;
+      if (canon.get(h) !== as.id) dupes++; else orphans++;
+    }
+    toast((dupes || orphans) ? dupes + " doublon" + (dupes > 1 ? "s" : "") + " et " + orphans + " fichier" + (orphans > 1 ? "s" : "") + " inutilisé" + (orphans > 1 ? "s" : "") + " supprimé" + (dupes + orphans > 1 ? "s" : "") + " · " + mo(freed) + " libérés" : "Aucun doublon trouvé" + (changed ? " (" + changed + " fiche" + (changed > 1 ? "s" : "") + " mise" + (changed > 1 ? "s" : "") + " à jour)" : ""));
+  } catch (x) { toast("La fusion a échoué en cours de route. Relancez-la : rien n'est perdu."); }
+  finally { b.disabled = false; armDelete(b); b.textContent = "Fusionner les doublons"; refreshStorage(); }
+});
+/* ---------- Importer un devis (crée les articles) ---------- */
+const imp = {file:null, lignes:[], busy:false};
+const IMP_MSG = "Glissez le devis ici (PDF ou image) ou cliquez sur « Choisir le devis ». Chaque ligne est lue automatiquement ; vous vérifiez avant de créer les articles.";
+function resetImport(){
+  imp.file = null; imp.lignes = [];
+  $("#imp-step1").hidden = false; $("#imp-step2").hidden = true; $("#imp-pick").hidden = false;
+  $("#imp-go").disabled = true; $("#imp-go").textContent = "Importer"; $("#imp-reset").hidden = true; $("#imp-err").hidden = true;
+  $("#imp-msg").textContent = IMP_MSG; $("#imp-sub").textContent = "";
+}
+$("#head-import").addEventListener("click", () => { resetImport(); fillFourSelect($("#imp-four"), ""); $("#dlg-import").showModal(); });
+$("#imp-reset").addEventListener("click", resetImport);
+$("#imp-file").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f) readImport(f); });
+{
+  const dz = $("#imp-drop");
+  ["dragenter", "dragover"].forEach(t => dz.addEventListener(t, e => { if (imp.busy) return; e.preventDefault(); dz.classList.add("over"); }));
+  ["dragleave", "dragend"].forEach(t => dz.addEventListener(t, () => dz.classList.remove("over")));
+  dz.addEventListener("drop", e => { e.preventDefault(); dz.classList.remove("over"); const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f && !imp.busy) readImport(f); });
+}
+function impErr(m){ const p = $("#imp-err"); p.textContent = m; p.hidden = !m; }
+async function readImport(file){
+  impErr("");
+  if (!state.sample) { impErr("La lecture automatique n'est pas disponible dans cette vue."); return; }
+  imp.busy = true; imp.file = file; $("#imp-pick").hidden = true;
+  $("#imp-msg").textContent = "Lecture de « " + file.name + " » en cours… Cela peut prendre une minute pour un long devis.";
+  try {
+    const {text, images} = await extractDoc(file);
+    if (!text && !images.length) throw {code:"empty"};
+    const existants = state.articles.map(a => a.ref + " | " + (a.designation || "") + (a.designationPerso ? " (nom interne : " + a.designationPerso + ")" : "") + (a.refFournisseur ? " | réf. fournisseur " + a.refFournisseur : "")).join("\n") || "(aucun)";
+    const prompt = "Tu lis un devis fournisseur (travaux publics, France). Extrais chaque ligne de produit pour créer ou mettre à jour les articles d'un catalogue de matériaux.\n" +
+      "Familles du catalogue : " + FAMILLES.map(f => f.code + " = " + f.nom).join(", ") + ".\n" +
+      "Articles déjà au catalogue (réf | désignation | réf. fournisseur) :\n" + existants + "\n" +
+      "Règles :\n- Utilise UNIQUEMENT des prix hors taxe (HT) : prix unitaire HT net, après remise de ligne si elle est indiquée. Jamais de TTC ; si seul le TTC existe, prixUnitaireHT = null.\n" +
+      "- Une entrée par ligne de produit. Pour les lignes de transport, frais, éco-participation, remise globale ou sous-total, mets fraisOuService à true.\n" +
+      "- designation : le libellé du produit tel qu'il figure sur le devis, nettoyé (sans prix ni quantité).\n" +
+      "- famille : le code le plus adapté parmi " + FAMILLES.map(f => f.code).join(", ") + ".\n" +
+      "- articleExistant : la réf. du catalogue si la ligne correspond clairement au même produit qu'un article déjà présent, sinon null.\n" +
+      "- conditionnement (ex. \"barre de 2,40 m\") et quantiteParConditionnement (dans l'unité de la ligne, ex. 2.4) seulement s'ils sont indiqués.\n- N'invente rien : null pour toute information absente.\n" +
+      "Réponds uniquement avec un objet JSON de cette forme : {\"fournisseur\": \"raison sociale de l'émetteur\", \"numeroDevis\": null, \"dateDevis\": \"AAAA-MM-JJ\", \"lignes\": [{\"designation\": \"Tuyau béton armé D400\", \"referenceFournisseur\": null, \"fabricant\": null, \"unite\": \"ml\", \"prixUnitaireHT\": 46, \"quantite\": 12, \"conditionnement\": null, \"quantiteParConditionnement\": null, \"famille\": \"ASS\", \"articleExistant\": null, \"fraisOuService\": false}]}\n\n" +
+      (text ? "Texte du devis :\n" + text.slice(0, 120000) : "Le devis est joint en image.");
+    const r = await state.sample.json(prompt, images.length ? {images, modelTier:"default"} : {modelTier:"default"});
+    const lignes = r && Array.isArray(r.lignes) ? r.lignes : [];
+    if (!lignes.length) throw {code:"nolines"};
+    const num = v => v == null || v === "" || isNaN(Number(v)) ? null : Number(v);
+    imp.lignes = lignes.map(l => {
+      const ex = l.articleExistant && state.articles.find(a => a.ref === l.articleExistant);
+      return {action: ex ? "maj:" + ex._id : (l.fraisOuService ? "ignorer" : "creer"), famille: FAMILLES.some(f => f.code === l.famille) ? l.famille : FAMILLES[0].code,
+        designation: String(l.designation || "").trim(), perso: "", unite: l.unite || "", prix: num(l.prixUnitaireHT), quantite: num(l.quantite),
+        cond: l.conditionnement || "", condQte: num(l.quantiteParConditionnement), refFour: l.referenceFournisseur || "", fabricant: l.fabricant || "", frais: !!l.fraisOuService};
+    });
+    $("#imp-four").value = r.fournisseur || ""; $("#imp-num").value = r.numeroDevis || "";
+    $("#imp-date").value = /^\d{4}-\d{2}-\d{2}$/.test(r.dateDevis || "") ? r.dateDevis : "";
+    renderImport();
+  } catch (x) {
+    const c = x && x.code;
+    $("#imp-pick").hidden = false; $("#imp-msg").textContent = IMP_MSG;
+    impErr(c === "not_granted" || c === "sampling_disabled" ? "Lecture automatique refusée : autorisez Claude pour ce catalogue pour l'utiliser." : c === "rate_limited" ? "Trop de demandes : réessayez dans un moment." : c === "no_pdf" ? "Le lecteur PDF n'a pas pu se charger." : c === "empty" ? "Ce PDF ne contient pas de texte lisible." : c === "nolines" ? "Aucune ligne de produit n'a été trouvée dans ce devis." : "La lecture du devis a échoué. Réessayez.");
+  } finally { imp.busy = false; }
+}
+function renderImport(){
+  $("#imp-step1").hidden = true; $("#imp-step2").hidden = false; $("#imp-reset").hidden = false;
+  const tb = $("#imp-rows"); tb.textContent = "";
+  const arts = [...state.articles].sort((x, y) => String(x.ref).localeCompare(String(y.ref), "fr", {numeric:true}));
+  for (const l of imp.lignes){
+    const tr = el("tr", {class: l.action === "ignorer" ? "off" : ""});
+    const act = el("select", {"aria-label":"Action"});
+    act.append(el("option", {value:"creer", text:"Créer un article"}), el("option", {value:"ignorer", text:"Ignorer"}));
+    if (arts.length) { const g = el("optgroup", {label:"Mettre à jour"}); for (const a of arts) g.append(el("option", {value:"maj:" + a._id, text:a.ref + " · " + String(dispName(a)).slice(0, 40)})); act.append(g); }
+    act.value = l.action;
+    const fam = el("select", {"aria-label":"Famille"});
+    for (const f of FAMILLES) fam.append(el("option", {value:f.code, text:f.code}));
+    fam.value = l.famille;
+    const inp = (key, attrs, isNum) => { const i = el("input", Object.assign({value: l[key] == null ? "" : (isNum ? fmtIn(l[key]) : String(l[key]))}, attrs || {})); i.addEventListener("input", () => { l[key] = isNum ? parseNum(i.value) : i.value; }); return i; };
+    const prixInput = inp("prix", {"aria-label":"Prix HT", inputmode:"decimal", style:"text-align:right"}, true);
+    const prixHint = el("span", {class:"hint"});
+    const markPrice = () => {
+      const a = l.action.startsWith("maj:") ? state.articles.find(x => x._id === l.action.slice(4)) : null;
+      const cur = a && a.prix != null && a.prix !== "" ? Number(a.prix) : null;
+      const neu = l.prix == null || Number.isNaN(l.prix) ? null : Number(l.prix);
+      const diff = cur != null && neu != null && Math.abs(cur - neu) > 0.005;
+      prixInput.classList.toggle("pu-diff", diff);
+      prixHint.classList.toggle("pu-diff-txt", diff);
+      if (diff) { const pct = cur ? Math.round((neu - cur) / cur * 1000) / 10 : null; prixHint.textContent = "Actuel : " + euro(cur) + (pct != null ? " (" + (pct > 0 ? "+" : "") + pct.toLocaleString("fr-FR") + " %)" : ""); }
+      else prixHint.textContent = a && cur != null ? "Identique au catalogue" : "";
+    };
+    prixInput.addEventListener("input", markPrice);
+    const sync = () => { fam.disabled = l.action !== "creer"; tr.className = l.action === "ignorer" ? "off" : ""; markPrice(); updateImpCount(); };
+    act.addEventListener("change", () => { l.action = act.value; sync(); });
+    fam.addEventListener("change", () => { l.famille = fam.value; });
+    tr.append(
+      el("td", {class:"w-md"}, act, l.frais ? el("span", {class:"hint", text:"frais / service"}) : null),
+      el("td", {class:"w-sm"}, fam),
+      el("td", {class:"w-des"}, inp("designation", {"aria-label":"Désignation commerciale"}), l.quantite != null ? el("span", {class:"hint", text:"Quantité au devis : " + fmtQty(l.quantite)}) : null),
+      el("td", {class:"w-md"}, inp("perso", {"aria-label":"Désignation perso", placeholder:"Facultatif"})),
+      el("td", {class:"w-sm"}, inp("unite", {"aria-label":"Unité", list:"units"})),
+      el("td", {class:"w-sm"}, prixInput, prixHint),
+      el("td", {class:"w-md"}, inp("cond", {"aria-label":"Conditionnement"})),
+      el("td", {class:"w-sm"}, inp("condQte", {"aria-label":"Quantité par conditionnement", inputmode:"decimal", style:"text-align:right"}, true)),
+      el("td", {class:"w-md"}, inp("refFour", {"aria-label":"Référence fournisseur"})),
+      el("td", {class:"w-md"}, inp("fabricant", {"aria-label":"Fabricant", list:"fabricants"})));
+    tb.append(tr); sync();
+  }
+}
+function updateImpCount(){
+  const c = imp.lignes.filter(l => l.action === "creer").length, u = imp.lignes.filter(l => l.action.startsWith("maj:")).length;
+  $("#imp-sub").textContent = imp.lignes.length + " ligne" + (imp.lignes.length > 1 ? "s" : "") + " lue" + (imp.lignes.length > 1 ? "s" : "");
+  $("#imp-go").disabled = !(c + u);
+  $("#imp-go").textContent = "Importer" + (c ? " · " + c + " création" + (c > 1 ? "s" : "") : "") + (u ? " · " + u + " mise" + (u > 1 ? "s" : "") + " à jour" : "");
+}
+$("#imp-go").addEventListener("click", async () => {
+  const b = $("#imp-go");
+  if (!imp.file || !state.db || !state.assets) return;
+  const bad = imp.lignes.find(l => l.action !== "ignorer" && ((l.action === "creer" && !String(l.designation || "").trim()) || Number.isNaN(l.prix) || Number.isNaN(l.condQte)));
+  if (bad) { impErr("Vérifiez les lignes : chaque article créé a besoin d'une désignation, et les prix et quantités doivent être des nombres."); return; }
+  impErr(""); b.disabled = true; b.textContent = "Import en cours…";
+  try {
+    const file = imp.file;
+    const type = file.type || (/\.pdf$/i.test(file.name) ? "application/pdf" : "");
+    const h = await sha256(file).catch(() => null);
+    const dup = h ? findAssetByHash(h) : null;
+    const assetId = dup ? dup.id : (await state.assets.upload(file, type ? {type} : undefined)).id;
+    const four = await resolveFournisseur($("#imp-four").value);
+    const numero = $("#imp-num").value.trim(), date = $("#imp-date").value;
+    const now = new Date().toISOString(), today = now.slice(0, 10);
+    const docEntry = prix => ({id:assetId, nom:file.name, type:"Devis", le:now, hash:h || "", analyse:"Importé depuis le devis" + (numero ? " n° " + numero : "") + (date ? " du " + new Date(date).toLocaleDateString("fr-FR") : "") + (prix != null ? " : prix HT " + euro(prix) + "." : "."), analyseOk:true, prixHT:prix ?? null, numeroDevis:numero, dateDevis:date});
+    const taken = new Set(state.articles.map(a => a.ref));
+    const nextFree = fam => { let max = 0; const re = new RegExp("^" + fam + "-(\\d+)$"); for (const r of taken) { const m = re.exec(r); if (m) max = Math.max(max, Number(m[1])); } const ref = fam + "-" + String(max + 1).padStart(3, "0"); taken.add(ref); return ref; };
+    let created = 0, updated = 0;
+    for (const l of imp.lignes){
+      if (l.action === "ignorer") continue;
+      const prix = l.prix == null ? null : Number(l.prix);
+      const condQte = l.condQte > 0 ? Number(l.condQte) : null;
+      if (l.action === "creer") {
+        const ref = nextFree(l.famille);
+        await state.db.collection("articles").doc(ref).set({famille:l.famille, ref, designation:String(l.designation).trim(), designationPerso:String(l.perso || "").trim(), codeGed:"", unite:String(l.unite || "").trim(), prix, qteMarche:null, fournisseur:four, fabricant:String(l.fabricant || "").trim(), refFournisseur:String(l.refFour || "").trim(), conditionnement:String(l.cond || "").trim(), condQte, delai:null, norme:"", fiche:"", ficheId:"", ficheNom:"", ficheHash:"", documents:[docEntry(prix)], remarques:"", majLe:today});
+        created++;
+      } else {
+        const a = state.articles.find(x => x._id === l.action.slice(4));
+        if (!a) continue;
+        const docs = (Array.isArray(a.documents) ? a.documents : []).filter(d => d.id !== assetId);
+        docs.push(docEntry(prix));
+        const upd = {documents:docs, majLe:today};
+        if (prix != null) upd.prix = prix;
+        if (String(l.perso || "").trim()) upd.designationPerso = String(l.perso).trim();
+        if (!a.fournisseur && four) upd.fournisseur = four;
+        if (!a.unite && l.unite) upd.unite = String(l.unite).trim();
+        if (!a.refFournisseur && l.refFour) upd.refFournisseur = String(l.refFour).trim();
+        if (!a.fabricant && l.fabricant) upd.fabricant = String(l.fabricant).trim();
+        if (!a.conditionnement && l.cond) upd.conditionnement = String(l.cond).trim();
+        if (!(a.condQte > 0) && condQte) upd.condQte = condQte;
+        await state.db.collection("articles").doc(a._id).update(upd);
+        updated++;
+      }
+    }
+    $("#dlg-import").close();
+    toast("Devis importé : " + created + " article" + (created > 1 ? "s" : "") + " créé" + (created > 1 ? "s" : "") + ", " + updated + " mis à jour" + (dup ? " (fichier déjà stocké, réutilisé)" : ""));
+    refreshStorage();
+  } catch (x) { impErr("L'import s'est arrêté : " + dbMsg(x) + " Les lignes déjà traitées sont enregistrées."); updateImpCount(); }
+});
+/* ---------- Lecture automatique des devis ---------- */
+async function extractDoc(blob){
+  const isPdf = blob.type === "application/pdf" || /\.pdf$/i.test(blob.name || "");
+  const maxImg = state.sampleImages ? state.sampleImages.maxCount : 0;
+  if (!isPdf) return {text:"", images: maxImg ? [blob] : []};
+  const lib = window.pdfjsLib;
+  if (!lib) throw {code:"no_pdf"};
+  try { lib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; } catch (e) {}
+  const pdf = await lib.getDocument({data:new Uint8Array(await blob.arrayBuffer()), isEvalSupported:false}).promise;
+  let text = "";
+  for (let i = 1; i <= Math.min(pdf.numPages, 10); i++){
+    const c = await (await pdf.getPage(i)).getTextContent();
+    const lines = []; let line = [], lastY = null;
+    for (const it of c.items){ const y = Math.round(it.transform[5]); if (lastY !== null && Math.abs(y - lastY) > 2) { lines.push(line.join(" ")); line = []; } line.push(it.str); lastY = y; }
+    if (line.length) lines.push(line.join(" "));
+    text += "\n--- Page " + i + " ---\n" + lines.join("\n");
+  }
+  const images = [];
+  if (text.replace(/---\s*Page \d+\s*---|\s/g, "").length < 80 && maxImg){
+    for (let i = 1; i <= Math.min(pdf.numPages, maxImg, 3); i++){
+      const p = await pdf.getPage(i); const vp = p.getViewport({scale:1.6});
+      const cv = document.createElement("canvas"); cv.width = vp.width; cv.height = vp.height;
+      await p.render({canvasContext:cv.getContext("2d"), viewport:vp}).promise;
+      images.push(await new Promise(r => cv.toBlob(r, "image/png")));
+    }
+    text = "";
+  }
+  return {text, images};
+}
+function markAuto(id){ const i = $(id); i.classList.add("auto"); i.addEventListener("input", () => i.classList.remove("auto"), {once:true}); }
+async function analyseDevis(doc, blob){
+  if (!state.sample) return;
+  const des = [$("#fa-designation").value.trim(), $("#fa-perso").value.trim()].filter(Boolean).join(" / nom interne : ");
+  if (!des) { doc.analyse = "Renseignez d'abord la désignation, puis cliquez sur « Lire le devis »."; doc.analyseOk = false; renderDocs(); return; }
+  doc.analyse = "Lecture du devis en cours…"; doc.analyseOk = false; renderDocs();
+  try {
+    const {text, images} = await extractDoc(blob);
+    if (!text && !images.length) throw {code:"empty"};
+    const unite = $("#fa-unite").value.trim();
+    const prompt = "Tu lis un devis fournisseur (travaux publics, France) pour remplir la fiche d'un article de catalogue.\n" +
+      "Article recherché :\n- Désignation : " + des + "\n- Code GED : " + ($("#fa-ged").value.trim() || "—") + "\n- Unité de vente du catalogue : " + (unite || "non renseignée") + "\n- Conditionnement connu : " + ($("#fa-cond").value.trim() || "—") + "\n" +
+      "Trouve dans le devis la ligne qui correspond à cet article. La désignation contient les indices pour la repérer (nom du produit, diamètre, classe, référence…).\n" +
+      "Règles :\n- Utilise UNIQUEMENT des prix hors taxe (HT). N'utilise jamais un prix TTC. Si seul un prix TTC est donné, mets prixUnitaireHT à null et explique-le dans remarque.\n" +
+      "- prixUnitaireHT = prix unitaire HT net (après remise de ligne si elle est indiquée), dans l'unité de vente du catalogue si elle est renseignée. Si le devis donne le prix dans une autre unité (par exemple par barre de 2,40 m alors que le catalogue est au ml) et que la conversion est certaine, convertis, mets prixConvertiAUniteCatalogue à true et donne le calcul dans remarque. Sinon donne le prix tel quel et précise son unité dans uniteDevis.\n" +
+      "- quantiteParConditionnement est exprimée dans l'unité du catalogue (par exemple 2.4 pour une barre de 2,40 m vendue au ml).\n- N'invente rien : mets null pour toute information absente du devis.\n" +
+      "Réponds uniquement avec un objet JSON de cette forme : {\"trouve\": true, \"ligneDevis\": \"texte de la ligne retenue\", \"prixUnitaireHT\": 36.5, \"uniteDevis\": \"ml\", \"prixConvertiAUniteCatalogue\": false, \"fournisseur\": \"raison sociale de l'émetteur\", \"referenceFournisseur\": null, \"fabricant\": null, \"conditionnement\": \"barre de 2,40 m\", \"quantiteParConditionnement\": 2.4, \"numeroDevis\": null, \"dateDevis\": \"AAAA-MM-JJ\", \"remarque\": null}\n\n" +
+      (text ? "Texte du devis :\n" + text.slice(0, 80000) : "Le devis est joint en image.");
+    const r = await state.sample.json(prompt, images.length ? {images, modelTier:"default"} : {modelTier:"default"});
+    if (!state.docs.includes(doc)) return;
+    if (!r || !r.trouve) { doc.analyse = "Aucune ligne du devis ne correspond à la désignation. Précisez-la, puis cliquez sur « Relire »."; doc.analyseOk = false; renderDocs(); return; }
+    const filled = [];
+    const fill = (id, val, label) => { if (val == null || val === "") return; const i = $(id); if (i.value.trim()) return; i.value = String(val); markAuto(id); filled.push(label); };
+    const num = v => v == null || v === "" || isNaN(Number(v)) ? null : Number(v);
+    const prix = num(r.prixUnitaireHT);
+    const sameUnit = !unite || !r.uniteDevis || norm(r.uniteDevis).replace(/[^a-z0-9]/g, "") === norm(unite).replace(/[^a-z0-9]/g, "");
+    let note = "";
+    if (prix != null && (r.prixConvertiAUniteCatalogue || sameUnit)) {
+      const old = parseNum($("#fa-prix").value);
+      $("#fa-prix").value = fmtIn(Math.round(prix * 10000) / 10000); markAuto("#fa-prix");
+      filled.push("prix HT " + euro(prix) + (old != null && !Number.isNaN(old) && old !== prix ? " (avant " + euro(old) + ")" : ""));
+      doc.prixHT = prix;
+    } else if (prix != null) note = "Prix HT relevé : " + euro(prix) + " par " + r.uniteDevis + ", non reporté car l'unité diffère (" + unite + ").";
+    else note = "Pas de prix HT trouvé.";
+    if (!unite) fill("#fa-unite", r.uniteDevis, "unité");
+    fill("#fa-fournisseur", r.fournisseur, "fournisseur");
+    fill("#fa-reffour", r.referenceFournisseur, "réf. fournisseur");
+    fill("#fa-fabricant", r.fabricant, "fabricant");
+    fill("#fa-cond", r.conditionnement, "conditionnement");
+    if (num(r.quantiteParConditionnement) > 0) fill("#fa-condqte", fmtIn(num(r.quantiteParConditionnement)), "qté par conditionnement");
+    doc.numeroDevis = r.numeroDevis || ""; doc.dateDevis = r.dateDevis || "";
+    const head = "Devis" + (r.numeroDevis ? " n° " + r.numeroDevis : "") + (r.dateDevis ? " du " + new Date(r.dateDevis).toLocaleDateString("fr-FR") : "") + " lu";
+    doc.analyse = head + (filled.length ? " : " + filled.join(", ") + " rempli" + (filled.length > 1 ? "s" : "") + "." : ".") + (note ? " " + note : "") + (r.ligneDevis ? " Ligne retenue : « " + String(r.ligneDevis).slice(0, 160) + " »." : "") + (r.remarque ? " " + r.remarque : "");
+    doc.analyseOk = filled.length > 0;
+    renderDocs();
+    if (filled.length) toast("Devis lu : vérifiez les champs surlignés puis enregistrez");
+  } catch (x) {
+    if (!state.docs.includes(doc)) return;
+    const c = x && x.code;
+    doc.analyse = c === "not_granted" || c === "sampling_disabled" ? "Lecture automatique refusée : autorisez Claude pour ce catalogue pour l'utiliser." : c === "rate_limited" ? "Trop de demandes : réessayez dans un moment." : c === "no_pdf" ? "Le lecteur PDF n'a pas pu se charger." : c === "empty" ? "Ce PDF ne contient pas de texte lisible." : "La lecture automatique a échoué. Réessayez avec « Relire ».";
+    doc.analyseOk = false; renderDocs();
+  }
+}
+function renderArticleHistory(a){
+  const box = $("#fa-hist");
+  if (!a) { box.hidden = true; return; }
+  const rows = [];
+  for (const o of state.commandes) for (const l of (Array.isArray(o.lignes) ? o.lignes : [])) if (l.id === a._id) rows.push({o, l});
+  rows.sort((x, y) => String(y.o.le).localeCompare(String(x.o.le)));
+  const tb = $("#fa-hist-rows"); tb.textContent = "";
+  let q = 0, t = 0, unit = a.unite || "";
+  for (const {o, l} of rows){
+    const d = new Date(o.le);
+    q += Number(l.qte) || 0; if (l.total != null) t += Number(l.total);
+    tb.append(el("tr", null,
+      el("td", {text:d.toLocaleDateString("fr-FR") + " " + d.toLocaleTimeString("fr-FR", {hour:"2-digit", minute:"2-digit"})}),
+      el("td", null, el("span", {class:"ref", text:o.numero || o._id})),
+      el("td", {class:"num"}, fmtQty(l.qte) + (l.unite ? " " + l.unite : ""), l.conditionnement ? el("span", {class:"sub", text:l.conditionnement}) : null),
+      el("td", {class:"num", text:euro(l.total)}),
+      el("td", null, lineDeleteButton(o, l))));
+  }
+  box.hidden = false;
+  const has = rows.length > 0;
+  box.querySelector(".hist").hidden = !has;
+  $("#fa-hist-qte").textContent = fmtQty(q) + (unit ? " " + unit : "");
+  $("#fa-hist-tot").textContent = euro(Math.round(t * 100) / 100);
+  const qm = a.qteMarche != null && a.qteMarche !== "" ? Number(a.qteMarche) : null;
+  $("#fa-hist-note").textContent = !has ? "Cet article n'a encore jamais été commandé." : rows.length + " commande" + (rows.length > 1 ? "s" : "") + (qm != null ? " · " + fmtQty(Math.round((q / qm) * 1000) / 10) + " % de la quantité marché (" + fmtQty(qm) + (unit ? " " + unit : "") + ")" : "");
+}
+state.commandes = [];
+function renderCommandes(){
+  const box = $("#orders"); box.textContent = "";
+  $("#n-commandes").textContent = state.commandes.length;
+  const list = [...state.commandes].sort((x, y) => String(y.le).localeCompare(String(x.le)));
+  for (const o of list){
+    const d = new Date(o.le);
+    const lignes = Array.isArray(o.lignes) ? o.lignes : [];
+    const del = el("button", {type:"button", class:"btn danger small", text:"Supprimer"});
+    del.hidden = !state.canWrite;
+    del.addEventListener("click", async () => {
+      if (!del.dataset.armed){ del.dataset.armed = "1"; del.classList.add("armed"); del.textContent = "Confirmer"; return; }
+      try { await state.db.collection("commandes").doc(o._id).delete(); toast("Commande " + (o.numero || o._id) + " supprimée"); } catch (x) { toast(dbMsg(x)); }
+    });
+    const tb = el("tbody");
+    for (const l of lignes){
+      tb.append(el("tr", null,
+        el("td", null, el("span", {class:"ref", text:l.ref || ""}), l.codeGed ? el("span", {class:"sub", text:"GED " + l.codeGed}) : null),
+        el("td", null, l.designation || "", l.fournisseur ? el("span", {class:"sub", text:l.fournisseur}) : null),
+        el("td", {class:"num"}, fmtQty(l.qte) + (l.unite ? " " + l.unite : ""), l.conditionnement ? el("span", {class:"sub", text:l.conditionnement}) : null),
+        el("td", {class:"num hide-sm", text:euro(l.prix)}),
+        el("td", {class:"num", text:euro(l.total)}),
+        el("td", null, lineDeleteButton(o, l))));
+    }
+    box.append(el("article", {class:"panel order"},
+      el("div", {class:"order-head"},
+        el("div", null, el("h3", {text:"Commandé le " + d.toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"}) + " à " + d.toLocaleTimeString("fr-FR", {hour:"2-digit", minute:"2-digit"})}), el("span", {class:"ref", text:o.numero || o._id})),
+        el("div", {class:"right"}, el("span", {class:"meta"}, lignes.length + " article" + (lignes.length > 1 ? "s" : "") + " · Total HT ", el("strong", {text:euro(o.total)})), del)),
+      el("div", {class:"scroll"}, el("table", null,
+        el("thead", null, el("tr", null, el("th", {text:"Réf."}), el("th", {text:"Désignation"}), el("th", {class:"num", text:"Quantité"}), el("th", {class:"num hide-sm", text:"Prix HT"}), el("th", {class:"num", text:"Total HT"}), el("th", null, el("span", {class:"sr", text:"Supprimer"})))),
+        tb))));
+  }
+  $("#orders-empty").hidden = list.length > 0;
+}
+function openCart(){ renderCart(); armDelete($("#cart-clear")); $("#cart-clear").textContent = "Vider le panier"; $("#dlg-cart").showModal(); }
+$("#head-cart").addEventListener("click", openCart);
+$("#cart-clear").addEventListener("click", e => {
+  const b = e.currentTarget;
+  if (!b.dataset.armed){ b.dataset.armed = "1"; b.classList.add("armed"); b.textContent = "Confirmer"; return; }
+  state.cart = {}; armDelete(b); b.textContent = "Vider le panier";
+  setQty("__none__", 0); toast("Panier vidé");
+});
+$("#cart-export").addEventListener("click", async () => {
+  if (!state.downloads) return;
+  const c = v => { v = v == null ? "" : String(v); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const n = v => v == null ? "" : String(Math.round(v * 100) / 100).replace(".", ",");
+  const rows = [["Fournisseur","Référence","Code GED","Désignation","Unité","Quantité","Conditionnements","Prix HT (€)","Total HT (€)"].join(";")];
+  let total = 0;
+  for (const l of cartLines()){
+    const a = l.a || {}; const p = a.prix != null && a.prix !== "" ? Number(a.prix) : null; const eq = eff(l.a, l.q); const t = p == null ? null : p * eq; if (t != null) total += t;
+    rows.push([fourNom(a.fournisseur), a.ref || l.id, a.codeGed, dispName(a) || "Article supprimé", a.unite, fmtIn(eq), packText(l.a, l.q), n(p), n(t)].map(c).join(";"));
+  }
+  rows.push(["","","","","","","","Total HT", n(total)].join(";"));
+  try { await state.downloads.save({filename:"panier-" + new Date().toISOString().slice(0, 10) + ".csv", data:"﻿" + rows.join("\r\n")}); } catch (e) {}
+});
+function fourNom(code){ const f = state.fournisseurs.find(x => x.code === code); return f ? f.nom : (code || ""); }
+/* Recherche tolérante : pluriels, accents, fautes de frappe, mots dans le désordre */
+const stem = w => w.length > 3 ? w.replace(/(aux|eaux)$/, "au").replace(/(es|s|x)$/, "") : w;
+function lev(a, b, max){
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({length:b.length + 1}, (_, i) => i);
+  for (let i = 1; i <= a.length; i++){
+    const cur = [i]; let best = i;
+    for (let j = 1; j <= b.length; j++){ cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); best = Math.min(best, cur[j]); }
+    if (best > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+function tokenScore(t, words, hay){
+  if (hay.includes(t)) return 3;
+  const st = stem(t);
+  let s = 0;
+  for (const w of words){
+    const sw = stem(w);
+    if (sw === st) return 3;
+    if (st.length >= 3 && (sw.startsWith(st) || st.startsWith(sw) && sw.length >= 3)) s = Math.max(s, 2);
+    else if (st.length >= 4) { const max = st.length >= 6 ? 2 : 1; if (lev(st, sw, max) <= max) s = Math.max(s, 1.5); }
+  }
+  return s;
+}
+function searchScore(a, toks){
+  const hay = norm([a.ref, a.codeGed, a.designation, a.designationPerso, famNom(a.famille), a.unite, fourNom(a.fournisseur), a.fabricant, a.refFournisseur, a.conditionnement, a.remarques].join(" "));
+  const words = hay.split(/[^a-z0-9]+/).filter(Boolean);
+  let total = 0, hit = 0;
+  for (const t of toks){ const s = tokenScore(t, words, hay); if (s) { hit++; total += s; } }
+  return {all: hit === toks.length, hit, total};
+}
+function visibleArticles(){
+  const toks = norm(state.q).split(/[^a-z0-9]+/).filter(Boolean);
+  const base = state.articles.filter(a => !state.filter || a.famille === state.filter);
+  const byRef = (x, y) => String(x.ref).localeCompare(String(y.ref), "fr", {numeric:true});
+  state.approx = false;
+  if (!toks.length) return base.sort(byRef);
+  const scored = base.map(a => ({a, s: searchScore(a, toks)}));
+  let res = scored.filter(x => x.s.all);
+  if (!res.length) { res = scored.filter(x => x.s.hit > 0); state.approx = res.length > 0; }
+  return res.sort((x, y) => y.s.hit - x.s.hit || y.s.total - x.s.total || byRef(x.a, y.a)).map(x => x.a);
+}
+function restantCell(a){
+  if (a.qteMarche == null || a.qteMarche === "") return el("td", {class:"num", text:"—"});
+  const used = orderedQty(a._id);
+  const r = Math.round((Number(a.qteMarche) - used) * 1000) / 1000;
+  const td = el("td", {class:"num" + (r < 0 ? " neg" : ""), text:r.toLocaleString("fr-FR", {maximumFractionDigits:3}) + (a.unite ? " " + a.unite : "")});
+  if (used) td.append(el("span", {class:"sub", text:"− " + fmtQty(used) + " commandé"}));
+  return td;
+}
+function renderArticles(){
+  renderChips();
+  $("#th-restant").hidden = !state.commandes.length;
+  $("#th-restant").title = "Quantité marché moins le total des commandes de l'historique";
+  $("#n-articles").textContent = state.articles.length;
+  const tb = $("#t-articles tbody"); tb.textContent = "";
+  const rows = visibleArticles();
+  for (const a of rows){
+    const tr = el("tr", {tabindex:"0"},
+      el("td", null, el("span", {class:"ref", text:a.ref || ""}), a.codeGed ? el("span", {class:"sub", text:"GED " + a.codeGed}) : null),
+      el("td", null, a.designationPerso ? el("strong", {text:a.designationPerso}) : (a.designation || ""), a.designationPerso && a.designation ? el("span", {class:"sub", text:a.designation}) : null, a.conditionnement ? el("span", {class:"sub", text:a.conditionnement}) : null, docLink(a)),
+      el("td", null, el("span", {class:"fam"}, el("i", {text:a.famille || "—"}), famNom(a.famille))),
+      el("td", {text:a.unite || ""}),
+      el("td", {class:"num", text:euro(a.prix)}),
+      el("td", {class:"num hide-sm", text:a.qteMarche == null || a.qteMarche === "" ? "—" : Number(a.qteMarche).toLocaleString("fr-FR")}),
+      state.commandes.length ? restantCell(a) : null,
+      el("td", {class:"hide-sm", text:fourNom(a.fournisseur) || "—"}),
+      el("td", {class:"hide-sm", text:a.fabricant || "—"}),
+      el("td", {class:"num"}, cartButton(a)));
+    tr.addEventListener("click", () => openArticle(a));
+    tr.addEventListener("keydown", e => { if (e.key === "Enter") openArticle(a); });
+    tb.append(tr);
+  }
+  const none = state.articles.length === 0;
+  $("#t-articles").hidden = none || rows.length === 0;
+  $("#empty-articles").hidden = !none;
+  $("#nomatch").hidden = none || (rows.length > 0 && !state.approx);
+  $("#nomatch").firstElementChild.textContent = state.approx ? "Aucun article ne contient tous ces mots : voici les résultats les plus proches." : "Aucun article ne correspond à cette recherche.";
+}
+
+/* ---------- Rendu fournisseurs ---------- */
+function renderFournisseurs(){
+  $("#n-fournisseurs").textContent = state.fournisseurs.length;
+  const tb = $("#t-fournisseurs tbody"); tb.textContent = "";
+  const q = norm(state.qf);
+  const rows = state.fournisseurs.filter(f => !q || norm([f.code, f.nom, f.contact, f.familles, f.email].join(" ")).includes(q))
+    .sort((x, y) => String(x.code).localeCompare(String(y.code), "fr", {numeric:true}));
+  for (const f of rows){
+    const tr = el("tr", {tabindex:"0"},
+      el("td", null, el("span", {class:"ref", text:f.code || ""})),
+      el("td", {text:f.nom || ""}),
+      el("td", null, f.contact || "", (f.tel || f.email) ? el("span", {class:"sub", text:[f.tel, f.email].filter(Boolean).join(" · ")}) : null),
+      el("td", {class:"hide-sm", text:f.familles || "—"}),
+      el("td", {class:"num hide-sm", text:euro(f.franco)}),
+      el("td", {class:"num", text:(f.delai ?? "") === "" || f.delai == null ? "—" : f.delai + " j"}),
+      el("td", {class:"num hide-sm", text:f.remise == null || f.remise === "" ? "—" : String(f.remise).replace(".", ",") + " %"}));
+    tr.addEventListener("click", () => openFournisseur(f));
+    tr.addEventListener("keydown", e => { if (e.key === "Enter") openFournisseur(f); });
+    tb.append(tr);
+  }
+  const none = state.fournisseurs.length === 0;
+  $("#t-fournisseurs").hidden = none;
+  $("#empty-fournisseurs").hidden = !none;
+}
+function renderAll(){ renderArticles(); renderFournisseurs(); }
+
+$("#q").addEventListener("input", e => { state.q = e.target.value; renderArticles(); });
+$("#qf").addEventListener("input", e => { state.qf = e.target.value; renderFournisseurs(); });
+
+/* ---------- Fiche article ---------- */
+const famSel = $("#fa-famille");
+for (const f of FAMILLES) famSel.append(el("option", {value:f.code, text:f.code + " · " + f.nom}));
+function nextRef(code){
+  let max = 0; const re = new RegExp("^" + code + "-(\\d+)$");
+  for (const a of state.articles){ const m = re.exec(a.ref || ""); if (m) max = Math.max(max, Number(m[1])); }
+  return code + "-" + String(max + 1).padStart(3, "0");
+}
+function fillFourSelect(input, current){
+  const dl = $("#fournisseurs-dl"); dl.textContent = "";
+  for (const f of [...state.fournisseurs].sort((a, b) => String(a.nom || a.code).localeCompare(String(b.nom || b.code), "fr"))) dl.append(el("option", {value:f.nom || f.code, label:f.code}));
+  const f = state.fournisseurs.find(x => x.code === current);
+  input.value = f ? (f.nom || f.code) : (current || "");
+}
+async function resolveFournisseur(text){
+  const t = String(text || "").trim();
+  if (!t) return "";
+  const k = norm(t);
+  const hit = state.fournisseurs.find(f => norm(f.nom) === k || norm(f.code) === k);
+  if (hit) return hit.code;
+  let n = state.fournisseurs.length + 1;
+  while (state.fournisseurs.some(x => x.code === "F" + String(n).padStart(2, "0"))) n++;
+  const code = "F" + String(n).padStart(2, "0");
+  await state.db.collection("fournisseurs").doc(code).set({code, nom:t, contact:"", tel:"", email:"", familles:"", franco:null, delai:null, remise:null, remarques:""});
+  state.fournisseurs.push({_id:code, code, nom:t});
+  toast("Fournisseur « " + t + " » ajouté (" + code + ")");
+  return code;
+}
+let refTouched = false;
+famSel.addEventListener("change", () => { if (!state.editing && !refTouched) { $("#fa-ref").value = nextRef(famSel.value); } });
+$("#fa-ref").addEventListener("input", () => refTouched = true);
+function armDelete(btn){ btn.classList.remove("armed"); btn.textContent = "Supprimer"; btn.dataset.armed = ""; }
+
+function openArticle(a){
+  state.editing = a || null; refTouched = false;
+  const f = a || {};
+  $("#fa-title").textContent = a ? "Modifier l'article" : "Nouvel article";
+  famSel.value = f.famille || state.filter || "ASS";
+  $("#fa-ref").value = a ? (f.ref || "") : nextRef(famSel.value);
+  $("#fa-refshow").textContent = a ? f.ref : "";
+  $("#fa-designation").value = f.designation || "";
+  $("#fa-perso").value = f.designationPerso || "";
+  $("#fa-ged").value = f.codeGed || "";
+  $("#fa-unite").value = f.unite || "";
+  $("#fa-prix").value = f.prix == null ? "" : String(f.prix).replace(".", ",");
+  $("#fa-qte").value = f.qteMarche == null ? "" : String(f.qteMarche).replace(".", ",");
+  fillFourSelect($("#fa-fournisseur"), f.fournisseur);
+  $("#fa-fabricant").value = f.fabricant || "";
+  { const dl = $("#fabricants"); dl.textContent = ""; for (const n of [...new Set(state.articles.map(x => x.fabricant).filter(Boolean))].sort((x, y) => x.localeCompare(y, "fr"))) dl.append(el("option", {value:n})); }
+  $("#fa-reffour").value = f.refFournisseur || "";
+  $("#fa-cond").value = f.conditionnement || "";
+  { const p = packOf(f); $("#fa-condqte").value = f.condQte != null && f.condQte !== "" ? fmtIn(f.condQte) : (p ? fmtIn(p.size) : ""); }
+  $("#fa-delai").value = f.delai ?? "";
+  $("#fa-norme").value = f.norme || "";
+  $("#fa-fiche").value = f.fiche || "";
+  $("#fa-rem").value = f.remarques || "";
+  $("#fa-err").hidden = true;
+  state.fiche = f.ficheId ? {id:f.ficheId, nom:f.ficheNom, hash:f.ficheHash || ""} : null;
+  renderFiche();
+  state.docs = Array.isArray(f.documents) ? f.documents.map(d => Object.assign({}, d)) : [];
+  document.querySelectorAll("#f-article .auto").forEach(i => i.classList.remove("auto"));
+  renderDocs();
+  renderArticleHistory(a);
+  $("#fa-del").hidden = !a || !state.canWrite; armDelete($("#fa-del"));
+  lockForm($("#f-article"));
+  $("#dlg-article").showModal();
+}
+async function saveArticle(e){
+  e.preventDefault();
+  const err = m => { const p = $("#fa-err"); p.textContent = m; p.hidden = false; };
+  const ref = $("#fa-ref").value.trim().toUpperCase();
+  const data = {
+    famille: famSel.value, ref,
+    designation: $("#fa-designation").value.trim(),
+    designationPerso: $("#fa-perso").value.trim(),
+    codeGed: $("#fa-ged").value.trim(),
+    unite: $("#fa-unite").value.trim(),
+    prix: parseNum($("#fa-prix").value),
+    qteMarche: parseNum($("#fa-qte").value),
+    fournisseur: "",
+    fabricant: $("#fa-fabricant").value.trim(),
+    refFournisseur: $("#fa-reffour").value.trim(),
+    conditionnement: $("#fa-cond").value.trim(),
+    condQte: parseNum($("#fa-condqte").value),
+    delai: parseNum($("#fa-delai").value),
+    norme: $("#fa-norme").value.trim(),
+    fiche: $("#fa-fiche").value.trim(),
+    ficheId: state.fiche ? state.fiche.id : "",
+    ficheNom: state.fiche ? (state.fiche.nom || "") : "",
+    ficheHash: state.fiche ? (state.fiche.hash || "") : "",
+    documents: (state.docs || []).map(d => ({id:d.id, nom:d.nom || "", type:d.type || "Devis", le:d.le || "", hash:d.hash || "", analyse:d.analyse && d.analyse !== "Lecture du devis en cours…" ? d.analyse : "", analyseOk:!!d.analyseOk, prixHT:d.prixHT ?? null, numeroDevis:d.numeroDevis || "", dateDevis:d.dateDevis || ""})),
+    remarques: $("#fa-rem").value.trim(),
+  };
+  if (!data.ref || !data.designation || !data.unite) return err("Renseignez la référence, la désignation commerciale et l'unité.");
+  if (Number.isNaN(data.prix)) return err("Le prix doit être un nombre, par exemple 9,50.");
+  if (Number.isNaN(data.delai)) return err("Le délai doit être un nombre de jours.");
+  if (Number.isNaN(data.condQte) || (data.condQte != null && data.condQte <= 0)) return err("La quantité par conditionnement doit être un nombre supérieur à 0, par exemple 2,40.");
+  if (Number.isNaN(data.qteMarche)) return err("La quantité marché doit être un nombre, par exemple 120 ou 12,5.");
+  if (!/^[A-Za-z0-9._~:@+-]+$/.test(ref)) return err("La référence ne peut contenir que des lettres, chiffres et tirets.");
+  if (state.articles.some(a => a.ref === ref && (!state.editing || a._id !== state.editing._id))) return err("La référence " + ref + " existe déjà.");
+  if (!state.db) return err("La base n'est pas joignable : l'article n'a pas été enregistré.");
+  const btn = $("#fa-save"); btn.disabled = true;
+  try {
+    data.fournisseur = await resolveFournisseur($("#fa-fournisseur").value);
+    data.majLe = new Date().toISOString().slice(0, 10);
+    const id = state.editing ? state.editing._id : ref;
+    await state.db.collection("articles").doc(id).set(data);
+    $("#dlg-article").close(); toast(state.editing ? "Article mis à jour" : "Article " + ref + " ajouté");
+  } catch (x) { err(dbMsg(x)); }
+  finally { btn.disabled = false; }
+}
+$("#f-article").addEventListener("submit", saveArticle);
+$("#fa-del").addEventListener("click", async e => {
+  const b = e.currentTarget;
+  if (!b.dataset.armed){ b.dataset.armed = "1"; b.classList.add("armed"); b.textContent = "Confirmer la suppression"; return; }
+  try { await state.db.collection("articles").doc(state.editing._id).delete(); $("#dlg-article").close(); toast("Article supprimé"); }
+  catch (x) { const p = $("#fa-err"); p.textContent = dbMsg(x); p.hidden = false; }
+});
+
+/* ---------- Fiche fournisseur ---------- */
+function openFournisseur(f0){
+  state.editingF = f0 || null; const f = f0 || {};
+  $("#ff-title").textContent = f0 ? "Modifier le fournisseur" : "Nouveau fournisseur";
+  let n = state.fournisseurs.length + 1; while (state.fournisseurs.some(x => x.code === "F" + String(n).padStart(2, "0"))) n++;
+  $("#ff-code").value = f0 ? f.code : "F" + String(n).padStart(2, "0");
+  $("#ff-code").readOnly = !!f0;
+  $("#ff-nom").value = f.nom || ""; $("#ff-contact").value = f.contact || ""; $("#ff-tel").value = f.tel || ""; $("#ff-mail").value = f.email || "";
+  $("#ff-familles").value = f.familles || "";
+  $("#ff-franco").value = f.franco == null ? "" : String(f.franco).replace(".", ",");
+  $("#ff-delai").value = f.delai ?? ""; $("#ff-remise").value = f.remise == null ? "" : String(f.remise).replace(".", ",");
+  $("#ff-rem").value = f.remarques || "";
+  $("#ff-err").hidden = true;
+  $("#ff-del").hidden = !f0 || !state.canWrite; armDelete($("#ff-del"));
+  lockForm($("#f-fournisseur"));
+  $("#dlg-fournisseur").showModal();
+}
+$("#f-fournisseur").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = m => { const p = $("#ff-err"); p.textContent = m; p.hidden = false; };
+  const code = $("#ff-code").value.trim().toUpperCase();
+  const data = { code, nom: $("#ff-nom").value.trim(), contact: $("#ff-contact").value.trim(), tel: $("#ff-tel").value.trim(), email: $("#ff-mail").value.trim(),
+    familles: $("#ff-familles").value.trim(), franco: parseNum($("#ff-franco").value), delai: parseNum($("#ff-delai").value), remise: parseNum($("#ff-remise").value), remarques: $("#ff-rem").value.trim() };
+  if (!code || !data.nom) return err("Renseignez le code et le nom.");
+  if (!/^[A-Za-z0-9._~:@+-]+$/.test(code)) return err("Le code ne peut contenir que des lettres, chiffres et tirets.");
+  if ([data.franco, data.delai, data.remise].some(Number.isNaN)) return err("Franco, délai et remise doivent être des nombres.");
+  if (!state.editingF && state.fournisseurs.some(f => f.code === code)) return err("Le code " + code + " existe déjà.");
+  if (!state.db) return err("La base n'est pas joignable : le fournisseur n'a pas été enregistré.");
+  const btn = $("#ff-save"); btn.disabled = true;
+  try { await state.db.collection("fournisseurs").doc(state.editingF ? state.editingF._id : code).set(data); $("#dlg-fournisseur").close(); toast(state.editingF ? "Fournisseur mis à jour" : "Fournisseur " + code + " ajouté"); }
+  catch (x) { err(dbMsg(x)); }
+  finally { btn.disabled = false; }
+});
+$("#ff-del").addEventListener("click", async e => {
+  const b = e.currentTarget;
+  if (!b.dataset.armed){ b.dataset.armed = "1"; b.classList.add("armed"); b.textContent = "Confirmer la suppression"; return; }
+  try { await state.db.collection("fournisseurs").doc(state.editingF._id).delete(); $("#dlg-fournisseur").close(); toast("Fournisseur supprimé"); }
+  catch (x) { const p = $("#ff-err"); p.textContent = dbMsg(x); p.hidden = false; }
+});
+
+document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => b.closest("dialog").close()));
+$("#head-add").addEventListener("click", () => openArticle(null));
+$("#add-fournisseur").addEventListener("click", () => openFournisseur(null));
+document.querySelectorAll("[data-add]").forEach(b => b.addEventListener("click", () => b.dataset.add === "article" ? openArticle(null) : openFournisseur(null)));
+
+function lockForm(form){
+  for (const i of form.querySelectorAll("input,select,textarea")) { if (i.id !== "ff-code" || !state.editingF) i.disabled = !state.canWrite; }
+  for (const b of form.querySelectorAll(".write")) b.hidden = b.hidden || !state.canWrite;
+}
+function applyWriteMode(){
+  $("#head-import").hidden = !(state.assets && state.sample && state.canWrite);
+  for (const b of document.querySelectorAll("button.write:not(#fa-del):not(#ff-del)")) b.hidden = !state.canWrite;
+}
+function dbMsg(x){
+  const c = x && x.code;
+  if (c === "invalid_argument") { state.canWrite = false; applyWriteMode(); return "Vous avez un accès en lecture seule : demandez au propriétaire un accès Contributeur."; }
+  if (c === "quota_exceeded") return "La base est pleine : supprimez des éléments avant d'en ajouter.";
+  if (c === "resource_exhausted") return "Trop de modifications d'un coup : réessayez dans quelques secondes.";
+  return "L'enregistrement a échoué. Vérifiez votre connexion et réessayez.";
+}
+
+/* ---------- Export CSV ---------- */
+$("#export").addEventListener("click", async () => {
+  if (!state.downloads) { toast("Le téléchargement n'est pas disponible ici"); return; }
+  const cols = [["ref","Référence"],["codeGed","Code GED"],["designation","Désignation commerciale"],["designationPerso","Désignation perso"],["famille","Famille"],["unite","Unité"],["prix","Prix HT (€)"],["qteMarche","Quantité marché"],["fournisseur","Fournisseur"],["fabricant","Fabricant"],["refFournisseur","Réf. fournisseur"],["conditionnement","Conditionnement"],["delai","Délai (j)"],["norme","Norme"],["fiche","Fiche technique"],["remarques","Remarques"]];
+  const cell = v => { v = v == null ? "" : String(v); if (typeof v === "string" && /^\d+\.\d+$/.test(v)) v = v.replace(".", ","); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const lines = [cols.map(c => c[1]).join(";")].concat(visibleArticles().map(a => cols.map(c => cell(c[0] === "famille" ? famNom(a.famille) : c[0] === "fournisseur" ? fourNom(a.fournisseur) : a[c[0]])).join(";")));
+  try { await state.downloads.save({filename:"catalogue-materiaux.csv", data:"﻿" + lines.join("\r\n")}); }
+  catch (e) { /* refusé par l'utilisateur */ }
+});
+
+/* ---------- Démarrage ---------- */
+renderAll();
+(async () => {
+  const use = n => (window.claude && window.claude.use) ? window.claude.use(n).catch(() => null) : Promise.resolve(null);
+  const [db, user, downloads, assets] = await Promise.all([use("db"), use("user"), use("downloads"), use("assets")]);
+  state.downloads = downloads; state.assets = assets;
+  state.sample = await use("sample");
+  setTimeout(refreshStorage, 0);
+  $("#head-import").hidden = !(state.assets && state.sample && state.canWrite);
+  if (state.sample) { try { const lim = await state.sample.limits(); state.sampleImages = lim && lim.images ? lim.images : null; } catch (e) { state.sampleImages = null; } }
+  $("#export").hidden = !downloads;
+  if (!db) { state.canWrite = false; applyWriteMode(); setStatus("Le catalogue n'est pas joignable dans cette vue. Ouvrez-le connecté à votre compte Claude pour voir et modifier les articles.", true); return; }
+  state.db = db;
+  try {
+    const uid = user ? await user.id() : null;
+    if (uid) {
+      cartRef = db.doc("data/users/" + uid + "/panier");
+      $("#head-cart").hidden = false;
+      cartRef.onSnapshot(s => {
+        if (cartSaving || cartTimer || (s.metadata && s.metadata.hasPendingWrites)) return;
+        const d = s.exists ? s.data() : null;
+        state.cart = Object.assign({}, d && d.items ? d.items : {});
+        state.valide = d && d.valide ? d.valide : null;
+        state.dernier = d && d.dernierValide ? d.dernierValide : (d && d.valide ? {items: Object.assign({}, d.items || {}), le: d.valide} : null);
+        renderCartBadge(); renderArticles(); if ($("#dlg-cart").open) renderCart();
+      }, () => {});
+    }
+  } catch (e) {}
+  if (user) { try { const w = await user.can("data.write"); if (w === false) { state.canWrite = false; } } catch(e){} }
+  applyWriteMode();
+  let loaded = {a:false, f:false};
+  const timer = setTimeout(() => { if (!loaded.a || !loaded.f) setStatus("Le catalogue met du temps à répondre. Les données affichées peuvent être incomplètes.", true); }, 10000);
+  const done = () => { if (loaded.a && loaded.f) { clearTimeout(timer); setStatus(state.canWrite ? "" : "Lecture seule : vous pouvez consulter le catalogue mais pas le modifier."); } };
+  db.collection("articles").onSnapshot(s => {
+    state.articles = s.docs.map(d => Object.assign({_id:d.id}, d.data()));
+    if (!s.metadata.fromCache) loaded.a = true;
+    renderArticles(); done();
+  }, () => { loaded.a = true; clearTimeout(timer); setStatus("Impossible de charger les articles. Rechargez la page plus tard.", true); });
+  db.collection("fournisseurs").onSnapshot(s => {
+    state.fournisseurs = s.docs.map(d => Object.assign({_id:d.id}, d.data()));
+    if (!s.metadata.fromCache) loaded.f = true;
+    renderAll(); done();
+  }, () => { loaded.f = true; clearTimeout(timer); setStatus("Impossible de charger les fournisseurs. Rechargez la page plus tard.", true); });
+  db.collection("commandes").onSnapshot(s => {
+    state.commandes = s.docs.map(d => Object.assign({_id:d.id}, d.data()));
+    renderCommandes(); renderArticles();
+    if ($("#dlg-article").open && state.editing) renderArticleHistory(state.editing);
+  }, () => {});
+})();
+</script>
