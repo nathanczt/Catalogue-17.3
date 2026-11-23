@@ -19,7 +19,7 @@ Pour le donner à quelqu'un d'autre, utilisez le menu **Partager** du catalogue 
 ## Fonctions
 
 - Familles : Assainissement (ASS), Réseaux secs (RSE), Matériaux de remblais (REM), Maçonnerie (MAC). Références générées automatiquement (ASS-001…).
-- Fiche article : désignation commerciale et désignation perso, code GED, unité, prix HT, quantité marché, conditionnement et quantité par conditionnement, fournisseur et fabricant (liste ou saisie libre), fiche technique et devis/contrats en pièces jointes (glisser-déposer).
+- Fiche article : désignation commerciale et désignation perso, chantier, code GED, unité, prix HT, quantité marché, conditionnement et quantité par conditionnement, fournisseur et fabricant (liste ou saisie libre), fiche technique et devis/contrats en pièces jointes (glisser-déposer).
 - Lecture automatique des devis (prix HT uniquement) et import d'un devis complet pour créer ou mettre à jour les articles, avec alerte rouge si le prix change.
 - Un même fichier n'est stocké qu'une fois ; bouton « Fusionner les doublons » pour nettoyer.
 - Panier personnel arrondi au conditionnement (barres, pièces), validation, export CSV.

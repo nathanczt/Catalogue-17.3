@@ -36,7 +36,7 @@ nav.tabs button{white-space:nowrap}
 #head-add,#head-cart,#head-import{margin-bottom:8px}
 #dlg-import{width:min(1180px,calc(100vw - 24px))}
 #dlg-import .imp-body{display:flex;flex-direction:column;gap:14px}
-.imp-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 14px}
+.imp-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 14px}
 .imp th,.imp td{padding:6px 6px;font-size:13px}
 .imp td input,.imp td select{padding:5px 7px;font-size:13px;width:100%}
 .imp td.w-des{min-width:220px}
@@ -48,7 +48,9 @@ nav.tabs button{white-space:nowrap}
 .imp .hint{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
 .imp td input.pu-diff{border:2px solid var(--danger);background:var(--danger-soft);color:var(--danger);font-weight:600}
 .imp .hint.pu-diff-txt{color:var(--danger);font-weight:600;white-space:nowrap}
+@media (max-width:900px){.imp-meta{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.imp-meta{grid-template-columns:minmax(0,1fr)}}
+#f-chantier{max-width:220px}
 .cart-btn{display:inline-flex;align-items:center;gap:8px}
 .cart-n{font-family:var(--f-mono);font-size:12px;min-width:20px;padding:1px 6px;border-radius:999px;background:var(--steel);color:var(--surface);text-align:center}
 .add-cart{font:600 13px var(--f-body);padding:5px 10px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;white-space:nowrap}
@@ -216,13 +218,14 @@ label.btn{display:inline-block}
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
             <input id="q" type="search" placeholder="Rechercher une référence, un code GED, une désignation" aria-label="Rechercher">
           </div>
+          <select id="f-chantier" aria-label="Filtrer par chantier"><option value="">Tous les chantiers</option></select>
           <button class="btn" id="export" type="button">Exporter CSV</button>
         </div>
         <div class="chips" id="chips" aria-label="Filtrer par famille"></div>
         <div class="panel">
           <div class="scroll">
             <table id="t-articles">
-              <thead><tr><th>Réf.</th><th>Désignation</th><th>Famille</th><th>Unité</th><th class="num">Prix HT</th><th class="num hide-sm">Qté marché</th><th class="num" id="th-restant" hidden>Qté restant</th><th class="hide-sm">Fournisseur</th><th class="hide-sm">Fabricant</th><th><span class="sr">Panier</span></th></tr></thead>
+              <thead><tr><th>Réf.</th><th>Désignation</th><th>Famille</th><th class="hide-sm">Chantier</th><th>Unité</th><th class="num">Prix HT</th><th class="num hide-sm">Qté marché</th><th class="num" id="th-restant" hidden>Qté restant</th><th class="hide-sm">Fournisseur</th><th class="hide-sm">Fabricant</th><th><span class="sr">Panier</span></th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -287,6 +290,7 @@ label.btn{display:inline-block}
       <div class="field"><label for="fa-qte">Quantité marché</label><input id="fa-qte" inputmode="decimal" placeholder="Pour information"></div>
       <div class="field"><label for="fa-fournisseur">Fournisseur</label><input id="fa-fournisseur" list="fournisseurs-dl" placeholder="Choisir dans la liste ou saisir" autocomplete="off"><small>Un nouveau nom est ajouté aux fournisseurs à l'enregistrement.</small></div>
       <div class="field"><label for="fa-fabricant">Fabricant</label><input id="fa-fabricant" list="fabricants" placeholder="Choisir dans la liste ou saisir" autocomplete="off"><small>Un nouveau nom sera proposé dans la liste ensuite.</small></div>
+      <div class="field full"><label for="fa-chantier">Chantier</label><input id="fa-chantier" list="chantiers" placeholder="Choisir dans la liste ou saisir" autocomplete="off"></div>
       <div class="field"><label for="fa-reffour">Réf. fournisseur</label><input id="fa-reffour"></div>
       <div class="field"><label for="fa-cond">Conditionnement</label><input id="fa-cond" placeholder="Ex. Barre de 2,40 m"></div>
       <div class="field"><label for="fa-condqte">Quantité par conditionnement</label><input id="fa-condqte" inputmode="decimal" placeholder="Ex. 2,40"><small>Dans l'unité de vente. Le panier arrondit au conditionnement supérieur.</small></div>
@@ -404,6 +408,7 @@ label.btn{display:inline-block}
           <div class="field"><label for="imp-four">Fournisseur</label><input id="imp-four" list="fournisseurs-dl" autocomplete="off"></div>
           <div class="field"><label for="imp-num">N° de devis</label><input id="imp-num"></div>
           <div class="field"><label for="imp-date">Date du devis</label><input id="imp-date" type="date"></div>
+          <div class="field"><label for="imp-chantier">Chantier</label><input id="imp-chantier" list="chantiers" autocomplete="off" placeholder="Pour toutes les lignes"></div>
         </div>
         <p class="sub" style="margin:10px 0 8px">Vérifiez chaque ligne : prix HT uniquement. Choisissez de créer un article, de mettre à jour un article existant ou d'ignorer la ligne.</p>
         <div class="panel"><div class="scroll"><table class="imp">
@@ -424,6 +429,7 @@ label.btn{display:inline-block}
 </dialog>
 
 <datalist id="fabricants"></datalist>
+<datalist id="chantiers"></datalist>
 <datalist id="fournisseurs-dl"></datalist>
 <datalist id="units"><option value="Pièce"><option value="ml"><option value="m²"><option value="m³"><option value="Tonne"><option value="Kg"><option value="Sac 35 kg"><option value="Barre de 6 m"><option value="Couronne 100 m"><option value="Palette"></datalist>
 <div class="toast" id="toast" hidden></div>
@@ -650,7 +656,7 @@ async function createOrder(le){
     const a = l.a || {}; const q = eff(l.a, l.q); const r = l.a ? roundPack(l.a, l.q) : {};
     const prix = a.prix != null && a.prix !== "" ? Number(a.prix) : null; const t = prix == null ? null : Math.round(prix * q * 100) / 100;
     if (t != null) total += t;
-    return {id: l.id, ref: a.ref || l.id, codeGed: a.codeGed || "", designation: dispName(a) || "Article supprimé", designationCommerciale: a.designation || "", unite: a.unite || "", fournisseur: fourNom(a.fournisseur) || "", fabricant: a.fabricant || "", qte: q, conditionnement: r.p ? r.pieces + " " + plural(r.p.nom, r.pieces) : "", prix, total: t};
+    return {id: l.id, ref: a.ref || l.id, codeGed: a.codeGed || "", designation: dispName(a) || "Article supprimé", designationCommerciale: a.designation || "", unite: a.unite || "", fournisseur: fourNom(a.fournisseur) || "", fabricant: a.fabricant || "", chantier: a.chantier || "", qte: q, conditionnement: r.p ? r.pieces + " " + plural(r.p.nom, r.pieces) : "", prix, total: t};
   });
   if (!state.db) { toast("Panier validé, mais la commande n'a pas pu être enregistrée"); return; }
   try {
@@ -916,6 +922,7 @@ $("#imp-go").addEventListener("click", async () => {
     const dup = h ? findAssetByHash(h) : null;
     const assetId = dup ? dup.id : (await state.assets.upload(file, type ? {type} : undefined)).id;
     const four = await resolveFournisseur($("#imp-four").value);
+    const chantier = $("#imp-chantier").value.trim();
     const numero = $("#imp-num").value.trim(), date = $("#imp-date").value;
     const now = new Date().toISOString(), today = now.slice(0, 10);
     const docEntry = prix => ({id:assetId, nom:file.name, type:"Devis", le:now, hash:h || "", analyse:"Importé depuis le devis" + (numero ? " n° " + numero : "") + (date ? " du " + new Date(date).toLocaleDateString("fr-FR") : "") + (prix != null ? " : prix HT " + euro(prix) + "." : "."), analyseOk:true, prixHT:prix ?? null, numeroDevis:numero, dateDevis:date});
@@ -928,7 +935,7 @@ $("#imp-go").addEventListener("click", async () => {
       const condQte = l.condQte > 0 ? Number(l.condQte) : null;
       if (l.action === "creer") {
         const ref = nextFree(l.famille);
-        await state.db.collection("articles").doc(ref).set({famille:l.famille, ref, designation:String(l.designation).trim(), designationPerso:String(l.perso || "").trim(), codeGed:"", unite:String(l.unite || "").trim(), prix, qteMarche:null, fournisseur:four, fabricant:String(l.fabricant || "").trim(), refFournisseur:String(l.refFour || "").trim(), conditionnement:String(l.cond || "").trim(), condQte, delai:null, norme:"", fiche:"", ficheId:"", ficheNom:"", ficheHash:"", documents:[docEntry(prix)], remarques:"", majLe:today, creeLe:now});
+        await state.db.collection("articles").doc(ref).set({famille:l.famille, ref, designation:String(l.designation).trim(), designationPerso:String(l.perso || "").trim(), codeGed:"", unite:String(l.unite || "").trim(), prix, qteMarche:null, fournisseur:four, fabricant:String(l.fabricant || "").trim(), chantier, refFournisseur:String(l.refFour || "").trim(), conditionnement:String(l.cond || "").trim(), condQte, delai:null, norme:"", fiche:"", ficheId:"", ficheNom:"", ficheHash:"", documents:[docEntry(prix)], remarques:"", majLe:today, creeLe:now});
         created++;
       } else {
         const a = state.articles.find(x => x._id === l.action.slice(4));
@@ -942,6 +949,7 @@ $("#imp-go").addEventListener("click", async () => {
         if (!a.unite && l.unite) upd.unite = String(l.unite).trim();
         if (!a.refFournisseur && l.refFour) upd.refFournisseur = String(l.refFour).trim();
         if (!a.fabricant && l.fabricant) upd.fabricant = String(l.fabricant).trim();
+        if (!a.chantier && chantier) upd.chantier = chantier;
         if (!a.conditionnement && l.cond) upd.conditionnement = String(l.cond).trim();
         if (!(a.condQte > 0) && condQte) upd.condQte = condQte;
         await state.db.collection("articles").doc(a._id).update(upd);
@@ -1143,7 +1151,7 @@ function tokenScore(t, words, hay){
   return s;
 }
 function searchScore(a, toks){
-  const hay = norm([a.ref, a.codeGed, a.designation, a.designationPerso, famNom(a.famille), a.unite, fourNom(a.fournisseur), a.fabricant, a.refFournisseur, a.conditionnement, a.remarques].join(" "));
+  const hay = norm([a.ref, a.codeGed, a.chantier, a.designation, a.designationPerso, famNom(a.famille), a.unite, fourNom(a.fournisseur), a.fabricant, a.refFournisseur, a.conditionnement, a.remarques].join(" "));
   const words = hay.split(/[^a-z0-9]+/).filter(Boolean);
   let total = 0, hit = 0;
   for (const t of toks){ const s = tokenScore(t, words, hay); if (s) { hit++; total += s; } }
@@ -1151,7 +1159,8 @@ function searchScore(a, toks){
 }
 function visibleArticles(){
   const toks = norm(state.q).split(/[^a-z0-9]+/).filter(Boolean);
-  const base = state.articles.filter(a => !state.filter || a.famille === state.filter);
+  const ch = $("#f-chantier").value;
+  const base = state.articles.filter(a => (!state.filter || a.famille === state.filter) && (!ch || (ch === "__none__" ? !a.chantier : a.chantier === ch)));
   const byRef = (x, y) => String(x.ref).localeCompare(String(y.ref), "fr", {numeric:true});
   state.approx = false;
   if (!toks.length) return base.sort(byRef);
@@ -1168,7 +1177,21 @@ function restantCell(a){
   if (used) td.append(el("span", {class:"sub", text:"− " + fmtQty(used) + " commandé"}));
   return td;
 }
+function chantierList(){ return [...new Set(state.articles.map(x => (x.chantier || "").trim()).filter(Boolean))].sort((x, y) => x.localeCompare(y, "fr", {numeric:true})); }
+function fillChantiers(){
+  const dl = $("#chantiers"); dl.textContent = "";
+  const list = chantierList();
+  for (const n of list) dl.append(el("option", {value:n}));
+  const sel = $("#f-chantier"), cur = sel.value;
+  sel.textContent = ""; sel.append(el("option", {value:"", text:"Tous les chantiers"}));
+  for (const n of list) sel.append(el("option", {value:n, text:n}));
+  if (state.articles.some(a => !a.chantier) && list.length) sel.append(el("option", {value:"__none__", text:"Sans chantier"}));
+  sel.value = [...sel.options].some(o => o.value === cur) ? cur : "";
+  sel.hidden = !list.length;
+}
+$("#f-chantier").addEventListener("change", () => renderArticles());
 function renderArticles(){
+  fillChantiers();
   renderChips();
   $("#th-restant").hidden = !state.commandes.length;
   $("#th-restant").title = "Quantité marché moins le total des commandes de l'historique";
@@ -1180,6 +1203,7 @@ function renderArticles(){
       el("td", null, el("span", {class:"ref", text:a.ref || ""}), a.codeGed ? el("span", {class:"sub", text:"GED " + a.codeGed}) : null),
       el("td", null, a.designationPerso ? el("strong", {text:a.designationPerso}) : (a.designation || ""), a.designationPerso && a.designation ? el("span", {class:"sub", text:a.designation}) : null, a.conditionnement ? el("span", {class:"sub", text:a.conditionnement}) : null, docLink(a)),
       el("td", null, el("span", {class:"fam"}, el("i", {text:a.famille || "—"}), famNom(a.famille))),
+      el("td", {class:"hide-sm", text:a.chantier || "—"}),
       el("td", {text:a.unite || ""}),
       el("td", {class:"num", text:euro(a.prix)}),
       el("td", {class:"num hide-sm", text:a.qteMarche == null || a.qteMarche === "" ? "—" : Number(a.qteMarche).toLocaleString("fr-FR")}),
@@ -1275,6 +1299,7 @@ function openArticle(a){
   $("#fa-qte").value = f.qteMarche == null ? "" : String(f.qteMarche).replace(".", ",");
   fillFourSelect($("#fa-fournisseur"), f.fournisseur);
   $("#fa-fabricant").value = f.fabricant || "";
+  $("#fa-chantier").value = a ? (f.chantier || "") : ($("#f-chantier").value && $("#f-chantier").value !== "__none__" ? $("#f-chantier").value : "");
   { const dl = $("#fabricants"); dl.textContent = ""; for (const n of [...new Set(state.articles.map(x => x.fabricant).filter(Boolean))].sort((x, y) => x.localeCompare(y, "fr"))) dl.append(el("option", {value:n})); }
   $("#fa-reffour").value = f.refFournisseur || "";
   $("#fa-cond").value = f.conditionnement || "";
@@ -1309,6 +1334,7 @@ async function saveArticle(e){
     qteMarche: parseNum($("#fa-qte").value),
     fournisseur: "",
     fabricant: $("#fa-fabricant").value.trim(),
+    chantier: $("#fa-chantier").value.trim(),
     refFournisseur: $("#fa-reffour").value.trim(),
     conditionnement: $("#fa-cond").value.trim(),
     condQte: parseNum($("#fa-condqte").value),
@@ -1412,7 +1438,7 @@ function dbMsg(x){
 /* ---------- Export CSV ---------- */
 $("#export").addEventListener("click", async () => {
   if (!state.downloads) { toast("Le téléchargement n'est pas disponible ici"); return; }
-  const cols = [["ref","Référence"],["codeGed","Code GED"],["designation","Désignation commerciale"],["designationPerso","Désignation perso"],["famille","Famille"],["unite","Unité"],["prix","Prix HT (€)"],["qteMarche","Quantité marché"],["fournisseur","Fournisseur"],["fabricant","Fabricant"],["refFournisseur","Réf. fournisseur"],["conditionnement","Conditionnement"],["delai","Délai (j)"],["norme","Norme"],["fiche","Fiche technique"],["remarques","Remarques"]];
+  const cols = [["ref","Référence"],["codeGed","Code GED"],["designation","Désignation commerciale"],["designationPerso","Désignation perso"],["famille","Famille"],["unite","Unité"],["prix","Prix HT (€)"],["qteMarche","Quantité marché"],["fournisseur","Fournisseur"],["fabricant","Fabricant"],["chantier","Chantier"],["refFournisseur","Réf. fournisseur"],["conditionnement","Conditionnement"],["delai","Délai (j)"],["norme","Norme"],["fiche","Fiche technique"],["remarques","Remarques"]];
   const cell = v => { v = v == null ? "" : String(v); if (typeof v === "string" && /^\d+\.\d+$/.test(v)) v = v.replace(".", ","); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
   const lines = [cols.map(c => c[1]).join(";")].concat(visibleArticles().map(a => cols.map(c => cell(c[0] === "famille" ? famNom(a.famille) : c[0] === "fournisseur" ? fourNom(a.fournisseur) : a[c[0]])).join(";")));
   try { await state.downloads.save({filename:"catalogue-materiaux.csv", data:"﻿" + lines.join("\r\n")}); }
